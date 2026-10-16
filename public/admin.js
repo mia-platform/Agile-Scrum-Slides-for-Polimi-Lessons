@@ -248,7 +248,7 @@
   })
 
   $('e-session').onchange = () => openEdit($('e-session').value)
-  $('sl-all').onclick = e => { e.preventDefault(); $('e-slides').querySelectorAll('input').forEach(cb => { cb.checked = true; cb.parentElement.classList.remove('off') }) }
+  $('sl-all').onclick = e => { e.preventDefault(); $('e-slides').querySelectorAll('input').forEach(cb => { cb.checked = true; cb.parentElement.classList.remove('off') }); syncChapters() }
   const bioCount = () => { $('e-sbio-count').textContent = $('e-sbio').value.length + ' / 600 characters' }
   $('e-sbio').oninput = bioCount
   document.querySelectorAll('input[name=qmode]').forEach(r => { r.onchange = () => { $('q-custom').hidden = document.querySelector('input[name=qmode]:checked').value !== 'custom' } })
