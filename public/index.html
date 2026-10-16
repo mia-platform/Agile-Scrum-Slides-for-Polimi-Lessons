@@ -8,13 +8,15 @@
       var p = location.pathname
       if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
       document.write('<base href="' + location.origin + p + '">')
+      var t = (location.search.match(/[?&]flow_share=([^&#]+)/) || [])[1]
+      window.__asset = function (f) { return t ? f + '?flow_share=' + t : f }
     })()
   </script>
   <title>Introduction to Agile and Scrum · Polimi 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="deck.css">
+  <script>document.write('<link rel="stylesheet" href="' + __asset('deck.css') + '">')</script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>">
 </head>
 <body class="presenter">
@@ -69,8 +71,8 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="common.js"></script>
-  <script src="slides.js"></script>
-  <script src="deck.js"></script>
+  <script>document.write('<script src="' + __asset('common.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('deck.js') + '"><\/script>')</script>
 </body>
 </html>
