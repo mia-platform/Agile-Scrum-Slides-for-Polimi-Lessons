@@ -105,12 +105,13 @@
         <td><span class="status ${s.status}">${s.status}</span></td>
         <td>${s.players}</td>
         <td>${s.answers}</td>
+        <td style="max-width:260px;font-size:14px">${esc(chapterNames(s.chapters))}</td>
         <td style="white-space:nowrap">
           <button class="btn ghost small" data-edit="${s.id}">Personalize</button>
           <button class="btn ghost small" data-res="${s.id}">Results</button>
           ${s.status !== 'active' ? `<button class="btn go small" data-act="${s.id}">Activate</button> <button class="btn danger small" data-del="${s.id}">Delete</button>` : ''}
         </td>
-      </tr>`).join('') || '<tr><td colspan="7">No sessions yet.</td></tr>'
+      </tr>`).join('') || '<tr><td colspan="8">No sessions yet.</td></tr>'
     const opts = sessions.map(s => `<option value="${s.id}">${esc(s.name)}${s.status === 'active' ? ' (active)' : ''}</option>`).join('')
     $('e-session').innerHTML = opts
     $('r-session').innerHTML = opts
@@ -194,14 +195,58 @@
     bioCount()
     const keys = slideKeys()
     const hidden = new Set(c.hiddenSlides || [])
-    $('e-slides').innerHTML = SLIDES.map((def, i) => `
-      <label class="${hidden.has(keys[i]) ? 'off' : ''}"><input type="checkbox" data-key="${esc(keys[i])}" ${hidden.has(keys[i]) ? '' : 'checked'}><span class="n">${i + 1}</span>${esc(slideTitle(def))}</label>`).join('')
-    $('e-slides').querySelectorAll('input').forEach(cb => { cb.onchange = () => cb.parentElement.classList.toggle('off', !cb.checked) })
+    renderStructure(c)
     const custom = Array.isArray(c.questions)
     document.querySelector(`input[name=qmode][value=${custom ? 'custom' : 'default'}]`).checked = true
     $('q-custom').hidden = !custom
     $('e-questions').value = JSON.stringify(custom ? c.questions : d.defaultQuestions, null, 2)
   }
+  // ---------- chapters ----------
+  const CHAPTERS = window.CHAPTERS || []
+  const PRESETS = {
+    all: CHAPTERS.map(c => c.id),
+    agile: ['intro', 'agile', 'scrum', 'wrapup'],
+    agentic: ['intro', 'ai', 'agentic', 'future', 'wrapup'],
+    platform: ['intro', 'platform', 'agentic', 'wrapup']
+  }
+  const chapterNames = list => !Array.isArray(list) || !list.length ? 'All chapters' : CHAPTERS.filter(c => list.includes(c.id)).map(c => c.title).join(', ')
+  const selectedChapters = () => [...$('e-chapters').querySelectorAll('input:checked')].map(cb => cb.value)
+  function renderStructure (c) {
+    const keys = slideKeys()
+    const hidden = new Set(c.hiddenSlides || [])
+    const sel = Array.isArray(c.chapters) && c.chapters.length ? new Set(c.chapters) : null
+    $('e-chapters').innerHTML = CHAPTERS.map(ch => {
+      const n = SLIDES.filter(d => d.chapter === ch.id).length
+      const q = SLIDES.filter(d => d.chapter === ch.id && d.q).length
+      const on = !sel || sel.has(ch.id)
+      return `<label class="chap"><input type="checkbox" value="${ch.id}" ${on ? 'checked' : ''}><span><b>${esc(ch.title)}</b><small>${n} slides${q ? ` · ${q} live question${q > 1 ? 's' : ''}` : ''}</small><em>${esc(ch.desc)}</em></span></label>`
+    }).join('')
+    $('e-slides').innerHTML = CHAPTERS.map(ch => {
+      const items = SLIDES.map((def, i) => ({ def, i })).filter(x => x.def.chapter === ch.id)
+      if (!items.length) return ''
+      return `<div class="sl-group" data-ch="${ch.id}"><h4>${esc(ch.title)}</h4>${items.map(({ def, i }) => `<label class="${hidden.has(keys[i]) ? 'off' : ''}"><input type="checkbox" data-key="${esc(keys[i])}" ${hidden.has(keys[i]) ? '' : 'checked'}><span class="n">${i + 1}</span>${esc(slideTitle(def))}</label>`).join('')}</div>`
+    }).join('')
+    $('e-slides').querySelectorAll('input').forEach(cb => { cb.onchange = () => { cb.parentElement.classList.toggle('off', !cb.checked); syncChapters() } })
+    $('e-chapters').querySelectorAll('input').forEach(cb => { cb.onchange = syncChapters })
+    syncChapters()
+  }
+  function syncChapters () {
+    const sel = new Set(selectedChapters())
+    $('e-chapters').querySelectorAll('label.chap').forEach(l => l.classList.toggle('on', l.querySelector('input').checked))
+    $('e-slides').querySelectorAll('.sl-group').forEach(g => g.classList.toggle('skip', !sel.has(g.dataset.ch)))
+    const slides = [...$('e-slides').querySelectorAll('.sl-group:not(.skip) input:checked')].length
+    $('e-ch-summary').textContent = sel.size
+      ? `${sel.size} of ${CHAPTERS.length} chapters selected · ${slides} slides in this lesson`
+      : 'Select at least one chapter.'
+  }
+  document.querySelectorAll('[data-preset]').forEach(b => {
+    b.onclick = () => {
+      const want = new Set(PRESETS[b.dataset.preset] || [])
+      $('e-chapters').querySelectorAll('input').forEach(cb => { cb.checked = want.has(cb.value) })
+      syncChapters()
+    }
+  })
+
   $('e-session').onchange = () => openEdit($('e-session').value)
   $('sl-all').onclick = e => { e.preventDefault(); $('e-slides').querySelectorAll('input').forEach(cb => { cb.checked = true; cb.parentElement.classList.remove('off') }) }
   const bioCount = () => { $('e-sbio-count').textContent = $('e-sbio').value.length + ' / 600 characters' }
@@ -243,6 +288,8 @@
       try { questions = parseQuestions() } catch (e) { msg('e-msg', 'The questions JSON is not valid: ' + e.message, 'err'); return }
     }
     const hiddenSlides = [...$('e-slides').querySelectorAll('input')].filter(cb => !cb.checked).map(cb => cb.dataset.key)
+    const chapters = selectedChapters()
+    if (!chapters.length) { msg('e-msg', 'Select at least one chapter to present.', 'err'); return }
     const config = Object.assign({}, editing.config, {
       tag: $('e-tag').value.trim(),
       title: $('e-title').value.trim(),
@@ -257,6 +304,7 @@
         email: $('e-semail').value.trim()
       },
       hiddenSlides,
+      chapters: chapters.length === CHAPTERS.length ? null : chapters,
       questions
     })
     $('e-save').disabled = true
