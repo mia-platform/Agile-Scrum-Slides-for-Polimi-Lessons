@@ -202,6 +202,13 @@ app.post('/api/public/answer', (req, res) => {
   res.json({ ok: true })
 })
 
+// Public question text (no answer key), used when the presenter key is missing
+app.get('/api/public/question/:id', (req, res) => {
+  const q = publicQuestion(req.params.id)
+  if (!q) return res.status(404).json({ error: 'Unknown question id: ' + req.params.id })
+  res.json(q)
+})
+
 // Public leaderboard
 app.get('/api/leaderboard', (req, res) => {
   const limit = Math.min(50, Number(req.query.limit) || 10)
