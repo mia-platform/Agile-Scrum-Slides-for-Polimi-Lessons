@@ -206,8 +206,8 @@
   const PRESETS = {
     all: CHAPTERS.map(c => c.id),
     agile: ['intro', 'agile', 'scrum', 'wrapup'],
-    agentic: ['intro', 'ai', 'agentic', 'future', 'wrapup'],
-    platform: ['intro', 'platform', 'agentic', 'wrapup']
+    agentic: ['intro', 'agentic', 'roi', 'future', 'wrapup'],
+    platform: ['intro', 'platform', 'agentic', 'roi', 'wrapup']
   }
   const chapterNames = list => !Array.isArray(list) || !list.length ? 'All chapters' : CHAPTERS.filter(c => list.includes(c.id)).map(c => c.title).join(', ')
   const selectedChapters = () => [...$('e-chapters').querySelectorAll('input:checked')].map(cb => cb.value)

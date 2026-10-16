@@ -122,6 +122,17 @@ function ready () {
       await pool.query(fs.readFileSync(SCHEMA_FILE, 'utf8'))
       await pool.query(fs.readFileSync(path.join(ROOT, 'db', 'init', '020_media.sql'), 'utf8'))
       if ((await getSetting('publicUrl', null)) === null && baseConfig.publicUrl) await setSetting('publicUrl', baseConfig.publicUrl)
+      if (!(await getSetting('migrated_roi_chapter', false))) {
+        const { rows } = await pool.query("SELECT id, config FROM deck_sessions WHERE jsonb_typeof(config->'chapters') = 'array'")
+        for (const r of rows) {
+          const list = r.config.chapters
+          if (list.includes('agentic') && !list.includes('roi')) {
+            list.splice(list.indexOf('agentic') + 1, 0, 'roi')
+            await pool.query("UPDATE deck_sessions SET config = jsonb_set(config, '{chapters}', $2::jsonb) WHERE id = $1", [r.id, JSON.stringify(list)])
+          }
+        }
+        await setSetting('migrated_roi_chapter', true)
+      }
       await loadActive()
       console.log(`[deck] active session ${live.sessionId}: ${Object.keys(live.players).length} players`)
     })().catch(e => { readyPromise = null; throw e })

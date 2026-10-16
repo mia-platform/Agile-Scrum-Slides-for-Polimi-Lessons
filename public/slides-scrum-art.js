@@ -99,7 +99,11 @@
   }
 
   const i = S.findIndex(d => window.Live.slideKey(d) === 't:how-a-sprint-flows')
-  if (i >= 0) S[i] = slide
+  if (i >= 0) {
+    // keep the drawn diagram right after the illustration, with its own title
+    S[i].html = S[i].html.replace('How a sprint flows', 'The Scrum framework, step by step')
+    S.splice(i, 0, slide)
+  }
   else {
     const j = S.findIndex(d => (d.html || '').includes('Scrum events'))
     S.splice(j >= 0 ? j : S.length, 0, slide)

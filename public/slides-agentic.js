@@ -381,7 +381,7 @@
   const crest = 'M0,640 C 220,600 420,700 640,640 C 820,590 900,470 1060,470 C 1200,470 1300,560 1600,520 L1600,900 L0,900 Z'
   F.push({
     cls: 'dark ride',
-    steps: 2,
+    steps: 1,
     html: `
       <svg class="ride-sea" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
         <g class="wave slow" opacity=".35"><path d="${K.wavePath(560, 14, 200, 2200)}" stroke="#2FA3C4" stroke-width="3" fill="none"/></g>
@@ -392,7 +392,6 @@
       <div class="ride-text">
         <p class="lead" style="color:var(--foam);font-size:32px">You are software engineers, and you are lucky: you will live the industrial revolution of the software industry.</p>
         <h2 data-step="1" style="margin-top:26px">Don’t be afraid. Ride the wave with your boat!</h2>
-        <div class="it" data-step="2">Cavalca l’onda con la tua barca!</div>
       </div>`
   })
   F.push({ q: 'q-feel', html: live('q-feel') })

@@ -10,8 +10,8 @@
     { id: 'intro', title: 'Welcome & warm-up', desc: 'Title, speaker, today’s route, join with the QR code, warm-up questions', start: 't:introduction-to-agile-and-scrum' },
     { id: 'agile', title: 'Agile intro', desc: 'Reach the island, waterfall vs incremental, faster validation, the Agile Manifesto and its principles', start: 't:reach-the-island' },
     { id: 'scrum', title: 'Scrum', desc: 'Team and roles, artifacts, events and sprints, product backlog, user stories, 3C and INVEST', start: 't:scrum' },
-    { id: 'ai', title: 'AI in the SDLC', desc: 'The nine phases of an AI-assisted lifecycle, faster validation for business and tech', start: 't:ai-agents-the-future-of-the-sdlc' },
-    { id: 'agentic', title: 'Agentic SDLC', desc: 'Agents writing code, adoption pitfalls, token trap, code as a commodity, context engineering, measuring ROI', start: 't:when-agents-write-the-code' },
+    { id: 'agentic', title: 'Agentic SDLC', desc: 'Agents writing code, the AI-powered DevOps loop, the human in the loop, adoption pitfalls, token trap, code as a commodity, source control at agent scale', start: 't:when-agents-write-the-code' },
+    { id: 'roi', title: 'Agentic ROI', desc: 'The technical debt risk, context engineering, AI playbooks, scoring sessions and proving the delta', start: 't:the-risk-a-technical-debt-machine' },
     { id: 'resources', title: 'Resources & hiring', desc: 'What to read, we are hiring', start: 't:what-to-read' },
     { id: 'platform', title: 'DevOps & Platform Engineering', desc: 'Agile, DevOps and cloud native, scaling teams, internal developer platforms', start: 't:devops-and-platform-engineering' },
     { id: 'future', title: 'The future of software engineering', desc: '2027 outlook, Agile values, harness engineering, ride the wave', start: 't:where-this-is-heading' },
@@ -54,7 +54,15 @@
   function orderedChapters (cfg) {
     const all = window.CHAPTERS || []
     const saved = (cfg && Array.isArray(cfg.chapterOrder) ? cfg.chapterOrder : []).map(id => all.find(c => c.id === id)).filter(Boolean)
-    return [...new Set([...saved, ...all])]
+    const out = [...new Set(saved)]
+    // a chapter missing from the saved order goes right after the chapter that precedes it by default
+    all.forEach((c, i) => {
+      if (out.includes(c)) return
+      let j = -1
+      for (let k = i - 1; k >= 0 && j < 0; k--) j = out.indexOf(all[k])
+      out.splice(j + 1, 0, c)
+    })
+    return out
   }
   function orderSlides (list, cfg) {
     const keys = slideKeysFor(list)
