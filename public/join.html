@@ -7,7 +7,7 @@
   <script>
     (function () {
       var p = location.pathname
-      if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
+      if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = (last.indexOf('.') >= 0 || last === 'join') ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
       document.write('<base href="' + location.origin + p + '">')
     })()
   </script>
