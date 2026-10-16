@@ -85,7 +85,7 @@
     "type": "quiz",
     "prompt": "What are the 3C of a user story?",
     "options": [
-      "Code, Commit,Ce­lebrate",
+      "Code, Commit, Celebrate",
       "Card, Conversation, Confirmation",
       "Customer, Context, Criteria",
       "Create, Check, Close"
