@@ -164,12 +164,12 @@
           <circle cx="${JX(i)}" cy="${j[2]}" r="16" fill="${j[3] ? '#2E9E6B' : '#FF5A36'}" stroke="#0B2540" stroke-width="4"/>
           <text x="${JX(i)}" y="${j[2] + (j[3] ? -34 : 52)}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="28" fill="#0B2540">${i + 1}. ${j[0]}</text>
           <text x="${JX(i)}" y="${j[2] + (j[3] ? -64 : 80)}" text-anchor="middle" font-size="16" fill="#5E7387">${j[1]}</text></g>`).join('')}
-        <text data-climber x="${JX(0)}" y="${J[0][2] - 4}" text-anchor="middle" font-size="44" style="transition:all .8s ease">🧗</text>
+        <text data-climber x="0" y="-4" text-anchor="middle" font-size="44" style="transition:transform .8s ease,opacity .4s ease;transform:translate(${JX(0)}px,${J[0][2]}px)">🧗</text>
       </svg></div>${TEL}`,
     onStep (el, step) {
       const c = el.querySelector('[data-climber]')
       const i = Math.max(0, step - 1)
-      c.setAttribute('x', JX(i)); c.setAttribute('y', J[i][2] - 4)
+      c.style.transform = 'translate(' + JX(i) + 'px,' + J[i][2] + 'px)'
       c.style.opacity = step ? 1 : 0
     }
   })
