@@ -54,7 +54,7 @@
     })
     root.querySelectorAll('[data-agenda]').forEach(n => {
       const sel = Array.isArray(deck.chapters) && deck.chapters.length ? deck.chapters : null
-      const list = (window.CHAPTERS || []).filter(c => (!sel || sel.includes(c.id)) && c.id !== 'intro' && c.id !== 'wrapup')
+      const list = window.DeckOrder.orderedChapters(deck).filter(c => (!sel || sel.includes(c.id)) && c.id !== 'intro' && c.id !== 'wrapup')
       n.innerHTML = list.map((c, i) => `<div class="stop"><b>${i + 1}</b><div><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p></div></div>`).join('')
     })
   }

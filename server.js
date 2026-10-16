@@ -220,7 +220,7 @@ app.get('/api/deck', wrap(async (_req, res) => {
   const c = live.config
   res.json({
     sessionId: live.sessionId, tag: c.tag, title: c.title, subtitle: c.subtitle, speaker: c.speaker,
-    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, publicUrl: await getSetting('publicUrl', ''),
+    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, chapterOrder: c.chapterOrder || null, slideOrder: c.slideOrder || null, publicUrl: await getSetting('publicUrl', ''),
     media: await mediaIndex()
   })
 }))
@@ -437,6 +437,8 @@ function cleanConfig (c) {
   if (!Array.isArray(cfg.speaker.focus)) cfg.speaker.focus = String(cfg.speaker.focus || '').split(',').map(s => s.trim()).filter(Boolean)
   if (!Array.isArray(cfg.hiddenSlides)) cfg.hiddenSlides = []
   if (cfg.chapters != null && (!Array.isArray(cfg.chapters) || !cfg.chapters.length)) cfg.chapters = null
+  if (cfg.chapterOrder != null && !Array.isArray(cfg.chapterOrder)) cfg.chapterOrder = null
+  if (cfg.slideOrder != null && (typeof cfg.slideOrder !== 'object' || Array.isArray(cfg.slideOrder))) cfg.slideOrder = null
   if (cfg.questions !== null && !Array.isArray(cfg.questions)) throw Object.assign(new Error('Questions must be a JSON list'), { status: 400 })
   if (Array.isArray(cfg.questions)) {
     for (const q of cfg.questions) {
