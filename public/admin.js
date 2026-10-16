@@ -211,33 +211,107 @@
   }
   const chapterNames = list => !Array.isArray(list) || !list.length ? 'All chapters' : CHAPTERS.filter(c => list.includes(c.id)).map(c => c.title).join(', ')
   const selectedChapters = () => [...$('e-chapters').querySelectorAll('input:checked')].map(cb => cb.value)
+  // Order: chapters and the slides inside each chapter can be dragged, or moved with the ↑ ↓ buttons.
+  const DO = window.DeckOrder
+  const defaultChapterIds = () => CHAPTERS.map(c => c.id)
+  function defaultSlideKeys (chId) { return DO.orderSlides(SLIDES, {}).filter(x => x.def.chapter === chId).map(x => x.key) }
+  const moveButtons = what => `<span class="mv"><button type="button" class="btn ghost small" data-mv="-1" aria-label="Move ${esc(what)} earlier" title="Move earlier">↑</button><button type="button" class="btn ghost small" data-mv="1" aria-label="Move ${esc(what)} later" title="Move later">↓</button></span>`
   function renderStructure (c) {
-    const keys = slideKeys()
     const hidden = new Set(c.hiddenSlides || [])
     const sel = Array.isArray(c.chapters) && c.chapters.length ? new Set(c.chapters) : null
-    $('e-chapters').innerHTML = CHAPTERS.map(ch => {
+    const chapters = DO.orderedChapters(c)
+    const ordered = DO.orderSlides(SLIDES, c)
+    $('e-chapters').innerHTML = chapters.map(ch => {
       const n = SLIDES.filter(d => d.chapter === ch.id).length
       const q = SLIDES.filter(d => d.chapter === ch.id && d.q).length
       const on = !sel || sel.has(ch.id)
-      return `<label class="chap"><input type="checkbox" value="${ch.id}" ${on ? 'checked' : ''}><span><b>${esc(ch.title)}</b><small>${n} slides${q ? ` · ${q} live question${q > 1 ? 's' : ''}` : ''}</small><em>${esc(ch.desc)}</em></span></label>`
+      return `<div class="chap" draggable="true" data-ch="${ch.id}"><span class="grip" aria-hidden="true">⠿</span><label><input type="checkbox" value="${ch.id}" ${on ? 'checked' : ''}><span><b>${esc(ch.title)}</b><small>${n} slides${q ? ` · ${q} live question${q > 1 ? 's' : ''}` : ''}</small><em>${esc(ch.desc)}</em></span></label>${moveButtons(ch.title)}</div>`
     }).join('')
-    $('e-slides').innerHTML = CHAPTERS.map(ch => {
-      const items = SLIDES.map((def, i) => ({ def, i })).filter(x => x.def.chapter === ch.id)
+    $('e-slides').innerHTML = chapters.map(ch => {
+      const items = ordered.filter(x => x.def.chapter === ch.id)
       if (!items.length) return ''
-      return `<div class="sl-group" data-ch="${ch.id}"><h4>${esc(ch.title)}</h4>${items.map(({ def, i }) => `<label class="${hidden.has(keys[i]) ? 'off' : ''}"><input type="checkbox" data-key="${esc(keys[i])}" ${hidden.has(keys[i]) ? '' : 'checked'}><span class="n">${i + 1}</span>${esc(slideTitle(def))}</label>`).join('')}</div>`
+      return `<div class="sl-group" data-ch="${ch.id}"><h4>${esc(ch.title)}</h4>${items.map(({ def, key }) => {
+        const title = slideTitle(def) + (def.needsMedia ? ' (shown once its image is uploaded)' : '')
+        return `<div class="sl-row ${hidden.has(key) ? 'off' : ''}" draggable="true" data-key="${esc(key)}" ${def.needsMedia ? 'data-media="1"' : ''}><span class="grip" aria-hidden="true">⠿</span><label><input type="checkbox" data-key="${esc(key)}" ${hidden.has(key) ? '' : 'checked'}><span class="n"></span>${esc(title)}</label>${moveButtons(slideTitle(def))}</div>`
+      }).join('')}</div>`
     }).join('')
-    $('e-slides').querySelectorAll('input').forEach(cb => { cb.onchange = () => { cb.parentElement.classList.toggle('off', !cb.checked); syncChapters() } })
+    $('e-slides').querySelectorAll('input').forEach(cb => { cb.onchange = () => { cb.closest('.sl-row').classList.toggle('off', !cb.checked); syncChapters() } })
     $('e-chapters').querySelectorAll('input').forEach(cb => { cb.onchange = syncChapters })
     syncChapters()
   }
+  function syncGroups () {
+    const box = $('e-slides')
+    $('e-chapters').querySelectorAll('.chap').forEach(c => {
+      const g = box.querySelector(`.sl-group[data-ch="${c.dataset.ch}"]`)
+      if (g) box.appendChild(g)
+    })
+  }
   function syncChapters () {
     const sel = new Set(selectedChapters())
-    $('e-chapters').querySelectorAll('label.chap').forEach(l => l.classList.toggle('on', l.querySelector('input').checked))
+    $('e-chapters').querySelectorAll('.chap').forEach(l => l.classList.toggle('on', l.querySelector('input').checked))
     $('e-slides').querySelectorAll('.sl-group').forEach(g => g.classList.toggle('skip', !sel.has(g.dataset.ch)))
-    const slides = [...$('e-slides').querySelectorAll('.sl-group:not(.skip) input:checked')].length
+    // Number the slides as the deck will show them (image slides replace the drawn version, so they are not counted).
+    let n = 0
+    $('e-slides').querySelectorAll('.sl-group').forEach(g => {
+      g.querySelectorAll('.sl-row').forEach(r => {
+        const counts = !g.classList.contains('skip') && r.querySelector('input').checked && !r.dataset.media
+        r.querySelector('.n').textContent = counts ? ++n : '–'
+      })
+    })
     $('e-ch-summary').textContent = sel.size
-      ? `${sel.size} of ${CHAPTERS.length} chapters selected · ${slides} slides in this lesson`
+      ? `${sel.size} of ${CHAPTERS.length} chapters selected · ${n} slides in this lesson`
       : 'Select at least one chapter.'
+    const st = orderState()
+    $('e-order-reset').hidden = !st.chapterOrder && !st.slideOrder
+  }
+  function orderState () {
+    const chapterOrder = [...$('e-chapters').querySelectorAll('.chap')].map(c => c.dataset.ch)
+    const slideOrder = {}
+    $('e-slides').querySelectorAll('.sl-group').forEach(g => {
+      const keys = [...g.querySelectorAll('.sl-row')].map(r => r.dataset.key)
+      if (keys.join('|') !== defaultSlideKeys(g.dataset.ch).join('|')) slideOrder[g.dataset.ch] = keys
+    })
+    return {
+      chapterOrder: chapterOrder.join('|') === defaultChapterIds().join('|') ? null : chapterOrder,
+      slideOrder: Object.keys(slideOrder).length ? slideOrder : null
+    }
+  }
+  function sortable (box, itemSel, onChange) {
+    let drag = null
+    box.addEventListener('dragstart', e => {
+      const it = e.target.closest && e.target.closest(itemSel)
+      if (!it || !box.contains(it)) return
+      drag = it
+      it.classList.add('dragging')
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', it.dataset.key || it.dataset.ch || '')
+    })
+    box.addEventListener('dragover', e => {
+      if (!drag) return
+      e.preventDefault()
+      const it = e.target.closest && e.target.closest(itemSel)
+      if (!it || it === drag || it.parentElement !== drag.parentElement) return
+      const items = [...it.parentElement.children]
+      if (items.indexOf(drag) < items.indexOf(it)) it.after(drag); else it.before(drag)
+    })
+    box.addEventListener('drop', e => { if (drag) e.preventDefault() })
+    box.addEventListener('dragend', () => { if (!drag) return; drag.classList.remove('dragging'); drag = null; onChange() })
+    box.addEventListener('click', e => {
+      const b = e.target.closest && e.target.closest('[data-mv]')
+      if (!b || !box.contains(b)) return
+      const it = b.closest(itemSel)
+      const sib = b.dataset.mv === '-1' ? it.previousElementSibling : it.nextElementSibling
+      if (!sib || !sib.matches(itemSel)) return
+      if (b.dataset.mv === '-1') sib.before(it); else sib.after(it)
+      b.focus()
+      onChange()
+    })
+  }
+  sortable($('e-chapters'), '.chap', () => { syncGroups(); syncChapters() })
+  sortable($('e-slides'), '.sl-row', syncChapters)
+  $('e-order-reset').onclick = () => {
+    const st = { chapters: selectedChapters(), hiddenSlides: [...$('e-slides').querySelectorAll('input')].filter(cb => !cb.checked).map(cb => cb.dataset.key) }
+    renderStructure(st)
   }
   document.querySelectorAll('[data-preset]').forEach(b => {
     b.onclick = () => {
@@ -248,7 +322,7 @@
   })
 
   $('e-session').onchange = () => openEdit($('e-session').value)
-  $('sl-all').onclick = e => { e.preventDefault(); $('e-slides').querySelectorAll('input').forEach(cb => { cb.checked = true; cb.parentElement.classList.remove('off') }); syncChapters() }
+  $('sl-all').onclick = e => { e.preventDefault(); $('e-slides').querySelectorAll('input').forEach(cb => { cb.checked = true; cb.closest('.sl-row').classList.remove('off') }); syncChapters() }
   const bioCount = () => { $('e-sbio-count').textContent = $('e-sbio').value.length + ' / 600 characters' }
   $('e-sbio').oninput = bioCount
   document.querySelectorAll('input[name=qmode]').forEach(r => { r.onchange = () => { $('q-custom').hidden = document.querySelector('input[name=qmode]:checked').value !== 'custom' } })
@@ -305,6 +379,8 @@
       },
       hiddenSlides,
       chapters: chapters.length === CHAPTERS.length ? null : chapters,
+      chapterOrder: orderState().chapterOrder,
+      slideOrder: orderState().slideOrder,
       questions
     })
     $('e-save').disabled = true
