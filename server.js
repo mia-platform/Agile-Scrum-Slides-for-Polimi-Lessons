@@ -120,6 +120,7 @@ function ready () {
   if (!readyPromise) {
     readyPromise = (async () => {
       await pool.query(fs.readFileSync(SCHEMA_FILE, 'utf8'))
+      await pool.query(fs.readFileSync(path.join(ROOT, 'db', 'init', '020_media.sql'), 'utf8'))
       if ((await getSetting('publicUrl', null)) === null && baseConfig.publicUrl) await setSetting('publicUrl', baseConfig.publicUrl)
       await loadActive()
       console.log(`[deck] active session ${live.sessionId}: ${Object.keys(live.players).length} players`)
@@ -219,7 +220,8 @@ app.get('/api/deck', wrap(async (_req, res) => {
   const c = live.config
   res.json({
     sessionId: live.sessionId, tag: c.tag, title: c.title, subtitle: c.subtitle, speaker: c.speaker,
-    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, publicUrl: await getSetting('publicUrl', '')
+    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, publicUrl: await getSetting('publicUrl', ''),
+    media: await mediaIndex()
   })
 }))
 app.get('/api/config', wrap(async (_req, res) => res.json({ publicUrl: await getSetting('publicUrl', '') })))
@@ -373,6 +375,42 @@ app.post('/api/admin/reset-all', admin, wrap(async (req, res) => {
 app.post('/api/admin/config', admin, wrap(async (req, res) => {
   if (typeof req.body.publicUrl === 'string') await setSetting('publicUrl', req.body.publicUrl.trim())
   res.json({ ok: true, publicUrl: await getSetting('publicUrl', '') })
+}))
+
+// ----- slide images (uploaded from the admin console, stored in Postgres) -----
+const MEDIA_NAME = /^[a-z0-9][a-z0-9-]{1,40}$/
+const MEDIA_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+async function mediaIndex () {
+  const { rows } = await pool.query('SELECT name, type, credit, updated_at, length(data) AS size FROM deck_media ORDER BY name')
+  const out = {}
+  for (const r of rows) out[r.name] = { v: new Date(r.updated_at).getTime(), type: r.type, credit: r.credit || '', size: Number(r.size) }
+  return out
+}
+app.get('/api/media/:name', wrap(async (req, res) => {
+  const { rows } = await pool.query('SELECT type, data FROM deck_media WHERE name = $1', [req.params.name])
+  if (!rows.length) return res.status(404).json({ error: 'No image named ' + req.params.name })
+  res.set('Cache-Control', 'private, max-age=300').type(rows[0].type).send(rows[0].data)
+}))
+app.get('/api/admin/media', admin, wrap(async (_req, res) => res.json({ media: await mediaIndex() })))
+app.put('/api/admin/media/:name', admin, wrap(async (req, res) => {
+  const name = req.params.name
+  if (!MEDIA_NAME.test(name)) return res.status(400).json({ error: 'Invalid image name' })
+  const m = /^data:([a-z/+.-]+);base64,(.+)$/i.exec(String((req.body && req.body.dataUrl) || ''))
+  if (!m || !MEDIA_TYPES.includes(m[1].toLowerCase())) return res.status(400).json({ error: 'Send a JPEG, PNG, WebP or GIF image' })
+  const data = Buffer.from(m[2], 'base64')
+  if (data.length > 3 * 1024 * 1024) return res.status(413).json({ error: 'The image is larger than 3 MB after resizing' })
+  const credit = String((req.body && req.body.credit) || '').slice(0, 200)
+  await pool.query(`INSERT INTO deck_media (name, type, data, credit, updated_at) VALUES ($1, $2, $3, $4, now())
+    ON CONFLICT (name) DO UPDATE SET type = EXCLUDED.type, data = EXCLUDED.data, credit = EXCLUDED.credit, updated_at = now()`, [name, m[1].toLowerCase(), data, credit])
+  res.json({ ok: true, media: await mediaIndex() })
+}))
+app.patch('/api/admin/media/:name', admin, wrap(async (req, res) => {
+  await pool.query('UPDATE deck_media SET credit = $2 WHERE name = $1', [req.params.name, String((req.body && req.body.credit) || '').slice(0, 200)])
+  res.json({ ok: true, media: await mediaIndex() })
+}))
+app.delete('/api/admin/media/:name', admin, wrap(async (req, res) => {
+  await pool.query('DELETE FROM deck_media WHERE name = $1', [req.params.name])
+  res.json({ ok: true, media: await mediaIndex() })
 }))
 
 // ----- admin console: sessions -----
