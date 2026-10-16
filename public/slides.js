@@ -183,7 +183,7 @@
           <g class="waterfall-boat" id="wf-boat" style="transform:translate(270px,0)">
             <g transform="translate(0,330)">${speedboat()}<g class="boat-part p-rider">${seated(60)}</g></g>
           </g>`, { personId: 'wf-person' })}
-        <div class="caption" data-step="5" style="top:auto;bottom:150px;left:300px;max-width:720px;color:#0B2540">Only after 4 iterations we gather feedback: does the user even need to go to the island?</div>
+        <div class="caption" data-step="5" style="top:20px;left:0;max-width:900px;color:#0B2540">Only after 4 iterations we gather feedback: does the user even need to go to the island?</div>
       </div>${AR}`,
     onStep (el, step) {
       const parts = { 'p-paint': 2, 'p-engine': 3, 'p-wheel': 4, 'p-rider': 5 }
