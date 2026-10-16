@@ -341,7 +341,7 @@ kbd { font-family: var(--body); font-size: .85em; border: 1px solid var(--line);
 .btn.go { background: var(--kelp); }
 .btn.stop { background: var(--buoy); }
 .btn.ghost { background: transparent; color: var(--deep); border: 2px solid var(--line); }
-.btn.danger { color: var(--buoy); border-color: var(--buoy); }
+.btn.danger { color: #B3301A; border-color: #B3301A; }
 .btn[disabled] { opacity: .35; cursor: default; filter: none; }
 
 /* ---------- join & leaderboard ---------- */
