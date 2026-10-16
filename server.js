@@ -119,6 +119,10 @@ function publicQuestion (qid) {
 
 // ---- app --------------------------------------------------------------------
 const app = express()
+// vfs_scaffold_auth: the app's own user accounts under /auth (sign-up, login, roles); see auth/README.md.
+// Protect routes with requireUser / requireRole('admin'). Never hand-write login, password or session code.
+const { mountAuth, requireUser, requireRole } = require('./auth')
+mountAuth(app)
 app.use(express.json({ limit: '50kb' }))
 app.use((req, res, next) => { res.set('Cache-Control', 'no-store'); next() })
 
