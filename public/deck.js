@@ -42,6 +42,16 @@
       const v = get(deck, n.dataset.deckList) || []
       n.innerHTML = v.map(x => `<span>${esc(x)}</span>`).join('')
     })
+    root.querySelectorAll('[data-media-src]').forEach(n => {
+      const m = (deck.media || {})[n.dataset.mediaSrc]
+      if (!m) return
+      const u = window.Live.apiUrl('api/media/' + n.dataset.mediaSrc)
+      n.setAttribute('href', u + (u.includes('?') ? '&' : '?') + 'v=' + m.v)
+    })
+    root.querySelectorAll('[data-media-credit]').forEach(n => {
+      const m = (deck.media || {})[n.dataset.mediaCredit]
+      n.textContent = m && m.credit ? m.credit : ''
+    })
     root.querySelectorAll('[data-agenda]').forEach(n => {
       const sel = Array.isArray(deck.chapters) && deck.chapters.length ? deck.chapters : null
       const list = (window.CHAPTERS || []).filter(c => (!sel || sel.includes(c.id)) && c.id !== 'intro' && c.id !== 'wrapup')
@@ -63,7 +73,9 @@
     const keys = keysFor(ALL)
     const hidden = new Set(deck.hiddenSlides || [])
     const sel = Array.isArray(deck.chapters) && deck.chapters.length ? new Set(deck.chapters) : null
-    SLIDES = ALL.filter((d, i) => !hidden.has(keys[i]) && (!sel || sel.has(d.chapter)))
+    const media = deck.media || {}
+    const replaced = new Set(ALL.filter(d => d.needsMedia && media[d.needsMedia]).flatMap(d => d.replaces || []))
+    SLIDES = ALL.filter((d, i) => !hidden.has(keys[i]) && (!sel || sel.has(d.chapter)) && (!d.needsMedia || media[d.needsMedia]) && !replaced.has(keys[i]))
     if (!SLIDES.length) SLIDES = ALL
     stage.innerHTML = ''
     els = SLIDES.map((def, i) => {
