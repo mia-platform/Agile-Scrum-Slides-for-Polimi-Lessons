@@ -1,0 +1,133 @@
+[
+  {
+    "id": "q-exp",
+    "type": "poll",
+    "prompt": "How much do you already know about Agile and Scrum?",
+    "options": ["Never heard of it", "Only the theory", "Used it in a project", "I use it every day"],
+    "points": 100
+  },
+  {
+    "id": "q-word",
+    "type": "wordcloud",
+    "prompt": "One word that comes to mind when you hear “software project”",
+    "points": 100
+  },
+  {
+    "id": "q-waterfall",
+    "type": "quiz",
+    "prompt": "With the waterfall boat, when do we learn whether the user really wants to reach the island?",
+    "options": ["After the hull", "After the paint", "After the engine", "Only at the very end"],
+    "correct": 3,
+    "timer": 20,
+    "points": 1000
+  },
+  {
+    "id": "q-manifesto",
+    "type": "quiz",
+    "prompt": "Which of these is NOT a value of the Agile Manifesto?",
+    "options": [
+      "Individuals and interactions over processes and tools",
+      "Working software over comprehensive documentation",
+      "Following a plan over responding to change",
+      "Customer collaboration over contract negotiation"
+    ],
+    "correct": 2,
+    "timer": 25,
+    "points": 1000
+  },
+  {
+    "id": "q-popular",
+    "type": "quiz",
+    "prompt": "According to the State of Agile report, which approach do most teams follow?",
+    "options": ["Kanban", "Scrum", "Extreme Programming (XP)", "SAFe"],
+    "correct": 1,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-sprint",
+    "type": "quiz",
+    "prompt": "How long can a Scrum sprint last at most?",
+    "options": ["1 week", "Exactly 2 weeks", "Less than 1 month", "One quarter"],
+    "correct": 2,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-review",
+    "type": "quiz",
+    "prompt": "In which event does the team demo the potentially shippable product increment?",
+    "options": ["Sprint Planning", "Daily Scrum", "Sprint Review", "Sprint Retrospective"],
+    "correct": 2,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-owner",
+    "type": "quiz",
+    "prompt": "Who is accountable for the Product Backlog?",
+    "options": ["Scrum Master", "Product Owner", "Development Team", "Stakeholders"],
+    "correct": 1,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-impediments",
+    "type": "quiz",
+    "prompt": "The team is blocked by another department. Who helps remove the impediment?",
+    "options": ["Product Owner", "The most senior developer", "Scrum Master", "The customer"],
+    "correct": 2,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-3c",
+    "type": "quiz",
+    "prompt": "What are the 3C of a user story?",
+    "options": [
+      "Code, Commit,Ce­lebrate",
+      "Card, Conversation, Confirmation",
+      "Customer, Context, Criteria",
+      "Create, Check, Close"
+    ],
+    "correct": 1,
+    "timer": 20,
+    "points": 1000
+  },
+  {
+    "id": "q-negotiable",
+    "type": "quiz",
+    "prompt": "In INVEST, which letter says a story is not a contract and can still be discussed?",
+    "options": ["I — Independent", "N — Negotiable", "V — Valuable", "T — Testable"],
+    "correct": 1,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-ai",
+    "type": "poll",
+    "prompt": "Which phase of the SDLC would you hand to an AI agent first?",
+    "options": ["Plan & analyze", "Code", "Test", "Document"],
+    "points": 100
+  },
+  {
+    "id": "q-bottleneck",
+    "type": "quiz",
+    "prompt": "Many dev teams ask one central ops team for everything by ticket. What usually happens?",
+    "options": [
+      "Faster releases",
+      "Waiting time and bottlenecks",
+      "Fewer meetings",
+      "Higher team morale"
+    ],
+    "correct": 1,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-final",
+    "type": "wordcloud",
+    "prompt": "One word about today’s lesson",
+    "points": 100
+  }
+]
