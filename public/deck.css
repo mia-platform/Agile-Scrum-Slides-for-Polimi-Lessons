@@ -407,3 +407,13 @@ body.hide-hud #hud { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- speaker (filled from the session configuration) ---------- */
+.speaker { flex: 1; display: grid; grid-template-columns: 400px 1fr; gap: 70px; align-items: center; }
+.sp-photo { width: 400px; height: 400px; border-radius: 50%; object-fit: cover; border: 10px solid var(--white); box-shadow: 0 0 0 4px var(--sea); background: var(--foam); }
+.speaker h2 { margin-bottom: 10px; }
+.sp-role { font-family: var(--display); font-weight: 700; font-size: 34px !important; color: var(--sea); margin: 0 0 22px; }
+.sp-bio { font-size: 29px !important; max-width: 860px; color: var(--deep) !important; }
+.sp-focus { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 18px; }
+.sp-focus span { font-size: 20px; font-weight: 600; padding: 8px 16px; border-radius: 999px; background: var(--deep); color: var(--white); }
+.sp-links { margin: 0; }
