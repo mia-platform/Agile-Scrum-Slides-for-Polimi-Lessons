@@ -43,6 +43,7 @@ function defaultConfig () {
       email: 'giulio.roggero@mia-platform.eu'
     },
     hiddenSlides: [],
+    chapters: null, // null: every chapter
     questions: null // null: use questions.json
   }
 }
@@ -218,7 +219,7 @@ app.get('/api/deck', wrap(async (_req, res) => {
   const c = live.config
   res.json({
     sessionId: live.sessionId, tag: c.tag, title: c.title, subtitle: c.subtitle, speaker: c.speaker,
-    hiddenSlides: c.hiddenSlides || [], publicUrl: await getSetting('publicUrl', '')
+    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, publicUrl: await getSetting('publicUrl', '')
   })
 }))
 app.get('/api/config', wrap(async (_req, res) => res.json({ publicUrl: await getSetting('publicUrl', '') })))
@@ -378,7 +379,8 @@ app.post('/api/admin/config', admin, wrap(async (req, res) => {
 const toSession = s => ({
   id: Number(s.id), name: s.name, eventDate: s.event_date ? String(s.event_date).slice(0, 10) : null, place: s.place,
   status: s.status, createdAt: s.created_at, activatedAt: s.activated_at, archivedAt: s.archived_at,
-  players: s.players !== undefined ? Number(s.players) : undefined, answers: s.answers !== undefined ? Number(s.answers) : undefined
+  players: s.players !== undefined ? Number(s.players) : undefined, answers: s.answers !== undefined ? Number(s.answers) : undefined,
+  chapters: s.config && Array.isArray(s.config.chapters) ? s.config.chapters : null
 })
 
 app.get('/api/admin/sessions', admin, wrap(async (_req, res) => {
@@ -396,6 +398,7 @@ function cleanConfig (c) {
   cfg.speaker = Object.assign({}, d.speaker, (c && c.speaker) || {})
   if (!Array.isArray(cfg.speaker.focus)) cfg.speaker.focus = String(cfg.speaker.focus || '').split(',').map(s => s.trim()).filter(Boolean)
   if (!Array.isArray(cfg.hiddenSlides)) cfg.hiddenSlides = []
+  if (cfg.chapters != null && (!Array.isArray(cfg.chapters) || !cfg.chapters.length)) cfg.chapters = null
   if (cfg.questions !== null && !Array.isArray(cfg.questions)) throw Object.assign(new Error('Questions must be a JSON list'), { status: 400 })
   if (Array.isArray(cfg.questions)) {
     for (const q of cfg.questions) {
