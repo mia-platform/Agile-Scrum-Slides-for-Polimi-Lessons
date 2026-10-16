@@ -42,6 +42,11 @@
       const v = get(deck, n.dataset.deckList) || []
       n.innerHTML = v.map(x => `<span>${esc(x)}</span>`).join('')
     })
+    root.querySelectorAll('[data-agenda]').forEach(n => {
+      const sel = Array.isArray(deck.chapters) && deck.chapters.length ? deck.chapters : null
+      const list = (window.CHAPTERS || []).filter(c => (!sel || sel.includes(c.id)) && c.id !== 'intro' && c.id !== 'wrapup')
+      n.innerHTML = list.map((c, i) => `<div class="stop"><b>${i + 1}</b><div><h3>${esc(c.title)}</h3><p>${esc(c.desc)}</p></div></div>`).join('')
+    })
   }
   function keysFor (list) {
     const seen = {}
@@ -57,7 +62,8 @@
   function build () {
     const keys = keysFor(ALL)
     const hidden = new Set(deck.hiddenSlides || [])
-    SLIDES = ALL.filter((_, i) => !hidden.has(keys[i]))
+    const sel = Array.isArray(deck.chapters) && deck.chapters.length ? new Set(deck.chapters) : null
+    SLIDES = ALL.filter((d, i) => !hidden.has(keys[i]) && (!sel || sel.has(d.chapter)))
     if (!SLIDES.length) SLIDES = ALL
     stage.innerHTML = ''
     els = SLIDES.map((def, i) => {
@@ -110,7 +116,8 @@
     step = st
     applyStep(idx, step)
     history.replaceState(null, '', location.search + '#' + (idx + 1) + (step ? '.' + step : ''))
-    document.getElementById('nav-count').textContent = `${idx + 1} / ${SLIDES.length}`
+    const ch = (window.CHAPTERS || []).find(c => c.id === SLIDES[idx].chapter)
+    document.getElementById('nav-count').textContent = `${idx + 1} / ${SLIDES.length}` + (ch ? ` · ${ch.title}` : '')
     document.querySelector('#progress i').style.width = ((idx + 1) / SLIDES.length * 100) + '%'
   }
   function next () {
