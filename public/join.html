@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0B2540">
+  <script>
+    (function () {
+      var p = location.pathname
+      if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
+      document.write('<base href="' + location.origin + p + '">')
+    })()
+  </script>
+  <title>Agile live · join</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>">
+  <style>
+    :root {
+      --deep: #0B2540; --deep-2: #12365A; --lagoon: #F2F7F9; --foam: #D6EEF5; --sea: #1C7C9C;
+      --buoy: #FF5A36; --sand: #F2C14E; --kelp: #2E9E6B; --mist: #5E7387; --line: #C5D7E0;
+      --display: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+      --body: 'IBM Plex Sans', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { font-family: var(--body); background: var(--deep); color: #fff; min-height: 100dvh; display: flex; flex-direction: column;
+      padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0); }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; gap: 12px; }
+    header .brand { font-family: var(--display); font-weight: 800; font-size: 20px; }
+    header .me { font-size: 15px; text-align: right; color: var(--foam); }
+    header .me b { color: #fff; font-family: var(--display); font-size: 20px; }
+    main { flex: 1; display: flex; flex-direction: column; padding: 8px 18px 22px; }
+    h1 { font-family: var(--display); font-size: 34px; line-height: 1.05; margin: 10px 0 12px; letter-spacing: -0.02em; }
+    p { font-size: 17px; line-height: 1.45; color: var(--foam); margin: 0 0 12px; }
+    .screen { display: none; flex: 1; flex-direction: column; }
+    .screen.on { display: flex; }
+    input[type=text] { width: 100%; font: inherit; font-size: 20px; padding: 16px 18px; border-radius: 14px; border: 2px solid var(--deep-2); background: #fff; color: var(--deep); }
+    input[type=text]:focus { outline: 3px solid var(--sand); outline-offset: 1px; }
+    .btn { display: block; width: 100%; border: 0; border-radius: 14px; padding: 17px; font: inherit; font-size: 20px; font-weight: 600; background: var(--buoy); color: #fff; margin-top: 14px; cursor: pointer; }
+    .btn:disabled { opacity: .5; }
+    .btn:focus-visible { outline: 3px solid var(--sand); outline-offset: 2px; }
+    .err { color: #FFB8A6; font-size: 15px; min-height: 22px; margin-top: 8px; }
+    .wait { flex: 1; display: grid; place-items: center; text-align: center; }
+    .wait .big { font-size: 74px; }
+    .boat { display: inline-block; animation: bob 2.4s ease-in-out infinite; }
+    @keyframes bob { 50% { transform: translateY(-8px) rotate(-3deg); } }
+    .q-type { display: inline-block; align-self: flex-start; font-size: 14px; font-weight: 600; padding: 5px 12px; border-radius: 999px; background: var(--sand); color: var(--deep); }
+    .q-type.poll { background: var(--foam); } .q-type.wordcloud { background: #E5DDFB; }
+    .prompt { font-family: var(--display); font-weight: 800; font-size: 26px; line-height: 1.12; margin: 12px 0 16px; }
+    .opts { display: grid; gap: 12px; flex: 1; align-content: start; }
+    .opt { display: flex; align-items: center; gap: 14px; min-height: 76px; border: 0; border-radius: 16px; padding: 12px 18px; font: inherit; font-size: 18px; font-weight: 600; color: #fff; text-align: left; cursor: pointer; transition: transform .15s ease, opacity .3s ease; }
+    .opt:active { transform: scale(.98); }
+    .opt .sh { font-size: 24px; width: 28px; text-align: center; flex: none; }
+    .o0 { background: #FF5A36; } .o1 { background: #1C7C9C; } .o2 { background: #B98608; } .o3 { background: #2E9E6B; }
+    .opt.dim { opacity: .3; }
+    .opt.mine { box-shadow: 0 0 0 4px #fff; }
+    .opt.right { box-shadow: 0 0 0 4px var(--sand); }
+    .opt:disabled { cursor: default; }
+    .tbar { height: 8px; border-radius: 4px; background: var(--deep-2); overflow: hidden; margin-bottom: 12px; }
+    .tbar i { display: block; height: 100%; width: 100%; background: var(--sand); transition: width .25s linear; }
+    .timer { font-family: var(--display); font-weight: 800; font-size: 22px; float: right; }
+    .result { text-align: center; padding: 22px 16px; border-radius: 18px; margin-top: 14px; background: var(--deep-2); }
+    .result .big { font-size: 56px; }
+    .result h2 { font-family: var(--display); font-size: 30px; margin: 6px 0; }
+    .result.good { background: var(--kelp); } .result.bad { background: #8F2E1B; }
+    .counter { font-size: 14px; color: var(--foam); text-align: right; margin-top: 6px; }
+    footer { padding: 10px 18px 16px; font-size: 13px; color: #8FA8BB; text-align: center; }
+    footer button { background: none; border: 0; color: #8FA8BB; text-decoration: underline; font: inherit; cursor: pointer; padding: 8px; }
+    @media (prefers-reduced-motion: reduce) { .boat { animation: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="brand">⛵ Agile live</span>
+    <span class="me" id="me" hidden><b id="me-score">0</b> pts<br><span id="me-name"></span> · <span id="me-rank"></span></span>
+  </header>
+  <main>
+    <section class="screen" id="s-join">
+      <h1>Join the lesson</h1>
+      <p>Pick a nickname. It shows on the leaderboard, so keep it friendly.</p>
+      <form id="join-form" autocomplete="off">
+        <input type="text" id="name" maxlength="20" placeholder="Your nickname" aria-label="Nickname" required>
+        <button class="btn" type="submit" id="join-btn">Join</button>
+        <div class="err" id="join-err" role="alert"></div>
+      </form>
+    </section>
+
+    <section class="screen" id="s-wait">
+      <div class="wait"><div>
+        <div class="big"><span class="boat">⛵</span></div>
+        <h1 id="wait-title">You’re on board</h1>
+        <p id="wait-text">Watch the big screen: the next question will appear here.</p>
+      </div></div>
+    </section>
+
+    <section class="screen" id="s-q">
+      <div class="tbar" id="tbar" hidden><i></i></div>
+      <div><span class="q-type" id="q-type"></span><span class="timer" id="timer"></span></div>
+      <div class="prompt" id="prompt"></div>
+      <div class="opts" id="opts"></div>
+      <form id="word-form" hidden autocomplete="off">
+        <input type="text" id="word" maxlength="24" placeholder="Type one word" aria-label="Your word">
+        <button class="btn" type="submit">Send word</button>
+      </form>
+      <div class="err" id="q-err" role="alert"></div>
+      <div id="result"></div>
+    </section>
+  </main>
+  <footer><span id="players"></span> <button id="leave" hidden>Change nickname</button></footer>
+
+  <script src="common.js"></script>
+  <script src="join.js"></script>
+</body>
+</html>
