@@ -948,4 +948,5 @@
   }
 
   window.SLIDES = S
+  window.SlideKit = { live, credit, countUp, wavePath, seaScene, speedboat, sailboat, raft, rowboat, fullSpeedboat, person, seated }
 })()
