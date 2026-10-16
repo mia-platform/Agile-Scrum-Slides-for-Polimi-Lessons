@@ -129,5 +129,8 @@
     "type": "wordcloud",
     "prompt": "One word about today’s lesson",
     "points": 100
-  }
+  },
+  {"id":"q-loc","type":"quiz","prompt":"In one working day, roughly how many lines of code can a coding agent produce compared with a developer?","options":["About the same","2× more","10× more","100× more or beyond"],"correct":3,"timer":20,"points":1000},
+  {"id":"q-merges","type":"quiz","prompt":"Anthropic merged about 2,500 code changes per day in May 2026. How many per day by September?","options":["About 3,000","About 5,000","About 10,000","Over 30,000"],"correct":3,"timer":20,"points":1000},
+  {"id":"q-feel","type":"poll","prompt":"Agents are joining the team. How do you feel?","options":["Excited","Curious","A bit worried","Ready to ride the wave"],"points":100}
 ]
