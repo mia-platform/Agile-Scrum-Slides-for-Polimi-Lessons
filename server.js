@@ -6,7 +6,8 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
-const { Pool } = require('pg')
+const { Pool, types } = require('pg')
+types.setTypeParser(1082, v => v) // DATE columns as 'YYYY-MM-DD' strings
 
 // vfs_scaffold_auth: the app's own admin accounts under /auth (login, sessions, roles); see auth/README.md.
 const { mountAuth, requireUser, requireRole } = require('./auth')
@@ -375,7 +376,7 @@ app.post('/api/admin/config', admin, wrap(async (req, res) => {
 
 // ----- admin console: sessions -----
 const toSession = s => ({
-  id: Number(s.id), name: s.name, eventDate: s.event_date ? new Date(s.event_date).toISOString().slice(0, 10) : null, place: s.place,
+  id: Number(s.id), name: s.name, eventDate: s.event_date ? String(s.event_date).slice(0, 10) : null, place: s.place,
   status: s.status, createdAt: s.created_at, activatedAt: s.activated_at, archivedAt: s.archived_at,
   players: s.players !== undefined ? Number(s.players) : undefined, answers: s.answers !== undefined ? Number(s.answers) : undefined
 })
