@@ -1,6 +1,6 @@
 // Presenter deck: navigation, fragments, scaling, QR code and the live widgets.
 (function () {
-  const { api, esc, baseHref } = window.Live
+  const { api, esc, baseHref, withShare } = window.Live
   const SLIDES = window.SLIDES
   const stage = document.getElementById('stage')
   const SHAPES = ['▲', '◆', '●', '■']
@@ -95,9 +95,15 @@
   let publicUrl = ''
   function joinUrl () {
     if (publicUrl) {
-      return /join(\.html)?\/?$/.test(publicUrl) ? publicUrl : publicUrl.replace(/\/?$/, '/') + 'join.html'
+      try {
+        const u = new URL(publicUrl)
+        if (!/join(\.html)?\/?$/.test(u.pathname)) u.pathname = u.pathname.replace(/\/?$/, '/') + 'join.html'
+        return u.toString()
+      } catch (_) {
+        return publicUrl
+      }
     }
-    return baseHref() + 'join.html'
+    return withShare(baseHref() + 'join.html')
   }
   function drawQr (node, size) {
     if (!node) return
