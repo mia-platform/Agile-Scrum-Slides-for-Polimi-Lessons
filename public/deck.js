@@ -1,32 +1,76 @@
 // Presenter deck: navigation, fragments, scaling, QR code and the live widgets.
+// The active session (titles, speaker, hidden slides) comes from /api/deck; live controls
+// need an admin signed in (cookie session from /auth).
 (function () {
-  const { api, esc, baseHref, withShare } = window.Live
-  const SLIDES = window.SLIDES
+  const { api, esc, baseHref, withShare, slideKey } = window.Live
+  const ALL = window.SLIDES
+  let SLIDES = ALL
   const stage = document.getElementById('stage')
   const SHAPES = ['▲', '◆', '●', '■']
   const WORD_COLORS = ['#0B2540', '#1C7C9C', '#FF5A36', '#2E9E6B', '#D9A21B', '#12365A']
 
-  // ---------- presenter key ----------
-  const qs = new URLSearchParams(location.search)
-  if (qs.get('key')) localStorage.setItem('agileKey', qs.get('key'))
-  let KEY = localStorage.getItem('agileKey') || ''
-  let keyOk = false
-  async function checkKey () {
-    if (!KEY) { keyOk = false; return false }
-    try { await api('api/admin/ping?key=' + encodeURIComponent(KEY)); keyOk = true } catch (_) { keyOk = false }
-    return keyOk
+  // ---------- admin session ----------
+  let authed = false
+  let me = null
+  async function checkAuth () {
+    try {
+      const d = await api('auth/me')
+      me = d.user
+      authed = !!(me && me.roles && me.roles.includes('admin'))
+    } catch (_) { authed = false; me = null }
+    return authed
   }
-  const withKey = p => p + (p.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(KEY)
+
+  // ---------- deck configuration ----------
+  let deck = { hiddenSlides: [], speaker: {} }
+  const get = (obj, p) => p.split('.').reduce((o, k) => (o == null ? o : o[k]), obj)
+  function assetUrl (v) {
+    if (!v) return ''
+    if (/^(data:|https?:)/.test(v)) return v
+    return withShare(baseHref() + v.replace(/^\/+/, ''))
+  }
+  function applyDeck (root) {
+    root.querySelectorAll('[data-deck]').forEach(n => {
+      const v = get(deck, n.dataset.deck)
+      if (v != null && v !== '') n.textContent = v
+    })
+    root.querySelectorAll('[data-deck-img]').forEach(n => {
+      const v = get(deck, n.dataset.deckImg)
+      if (v) n.src = assetUrl(v)
+    })
+    root.querySelectorAll('[data-deck-list]').forEach(n => {
+      const v = get(deck, n.dataset.deckList) || []
+      n.innerHTML = v.map(x => `<span>${esc(x)}</span>`).join('')
+    })
+  }
+  function keysFor (list) {
+    const seen = {}
+    return list.map(d => {
+      let k = slideKey(d)
+      if (seen[k]) { seen[k]++; k = k + '-' + seen[k] } else seen[k] = 1
+      return k
+    })
+  }
 
   // ---------- build slides ----------
-  const els = SLIDES.map((def, i) => {
-    const s = document.createElement('section')
-    s.className = 'slide ' + (def.cls || '')
-    s.dataset.index = i
-    s.innerHTML = def.html
-    stage.appendChild(s)
-    return s
-  })
+  let els = []
+  function build () {
+    const keys = keysFor(ALL)
+    const hidden = new Set(deck.hiddenSlides || [])
+    SLIDES = ALL.filter((_, i) => !hidden.has(keys[i]))
+    if (!SLIDES.length) SLIDES = ALL
+    stage.innerHTML = ''
+    els = SLIDES.map((def, i) => {
+      const s = document.createElement('section')
+      s.className = 'slide ' + (def.cls || '')
+      s.dataset.index = i
+      s.innerHTML = def.html
+      applyDeck(s)
+      stage.appendChild(s)
+      return s
+    })
+    if (deck.title) document.title = deck.title
+  }
 
   function fit () {
     const k = Math.min(window.innerWidth / 1600, window.innerHeight / 900)
@@ -57,15 +101,15 @@
   function show (i, st) {
     const changed = i !== idx || !els[i].classList.contains('active')
     if (changed) {
-      els[idx].classList.remove('active')
-      leave(idx)
+      if (els[idx]) els[idx].classList.remove('active')
+      leave()
       idx = i
       els[idx].classList.add('active')
       enter(idx)
     }
     step = st
     applyStep(idx, step)
-    history.replaceState(null, '', '#' + (idx + 1) + (step ? '.' + step : ''))
+    history.replaceState(null, '', location.search + '#' + (idx + 1) + (step ? '.' + step : ''))
     document.getElementById('nav-count').textContent = `${idx + 1} / ${SLIDES.length}`
     document.querySelector('#progress i').style.width = ((idx + 1) / SLIDES.length * 100) + '%'
   }
@@ -82,9 +126,11 @@
   // ---------- widgets lifecycle ----------
   const timers = []
   function every (ms, fn) { fn(); timers.push(setInterval(fn, ms)) }
-  function leave () { while (timers.length) clearInterval(timers.pop()) }
+  function leave () { while (timers.length) clearInterval(timers.pop()); activeLive = null }
   function enter (i) {
     const el = els[i]
+    const def = SLIDES[i]
+    if (def.onEnter) { try { def.onEnter(el) } catch (e) { console.error(e) } }
     el.querySelectorAll('.live[data-q]').forEach(w => mountLive(w))
     if (el.querySelector('[data-join]')) mountJoin(el)
     el.querySelectorAll('[data-board]').forEach(b => every(2500, () => renderBoard(b, Number(b.dataset.board) || 10)))
@@ -92,8 +138,8 @@
   }
 
   // ---------- QR ----------
-  let publicUrl = ''
   function joinUrl () {
+    const publicUrl = deck.publicUrl || ''
     if (publicUrl) {
       try {
         const u = new URL(publicUrl)
@@ -198,33 +244,37 @@
     if (q.type === 'wordcloud') {
       w.querySelector('.cloud').addEventListener('click', e => {
         const t = e.target.closest('.w')
-        if (t && keyOk) act(w, 'hide', { word: t.dataset.word })
+        if (t && authed) act(w, 'hide', { word: t.dataset.word })
       })
     }
   }
 
   async function act (w, action, extra = {}) {
     const id = w.dataset.q
-    if (!keyOk) { openSettings('Enter the presenter key to run live questions.'); return }
+    if (!authed) { openSettings('Sign in to run live questions.'); return }
     if (action === 'reset' && !confirm('Reset all answers to this question?')) return
     try {
-      await api(`api/admin/question/${id}/${action}`, { method: 'POST', body: Object.assign({ key: KEY }, extra) })
+      await api(`api/admin/question/${id}/${action}`, { method: 'POST', body: extra })
       await pollLive(w)
-    } catch (e) { w.querySelector('.msg').textContent = e.message }
+    } catch (e) {
+      if (e.status === 401 || e.status === 403) { authed = false; openSettings('Your session expired: sign in again.') }
+      const m = w.querySelector('.msg'); if (m) m.textContent = e.message
+    }
   }
 
   async function pollLive (w) {
     const id = w.dataset.q
-    if (!keyOk) {
+    if (!authed) {
       if (!w.dataset.built) {
         try { const q = await api('api/public/question/' + id); buildLive(w, q); w.dataset.built = '1' } catch (e) { w.innerHTML = `<p class="msg">${esc(e.message)}</p>` }
       }
       const m = w.querySelector('.msg')
-      if (m) m.textContent = 'Presenter key missing: press , to open settings'
+      if (m) m.textContent = 'Not signed in: press , to sign in and run this question'
       return
     }
     let d
-    try { d = await api(withKey('api/admin/question/' + id)) } catch (e) {
+    try { d = await api('api/admin/question/' + id) } catch (e) {
+      if (e.status === 401 || e.status === 403) { authed = false; w.dataset.built = ''; return pollLive(w) }
       const m = w.querySelector('.msg'); if (m) m.textContent = e.message
       return
     }
@@ -296,46 +346,58 @@
     every(1000, () => pollLive(w))
   }
 
-  // ---------- settings ----------
+  // ---------- presenter panel ----------
   const settings = document.getElementById('settings')
-  function openSettings (msg) {
-    document.getElementById('set-key').value = KEY
-    document.getElementById('set-url').value = publicUrl
-    document.getElementById('key-status').textContent = msg || (keyOk ? 'Key accepted: live controls are on.' : 'No valid key yet: the live controls are off.')
-    settings.hidden = false
-    document.getElementById('set-key').focus()
+  const $ = id => document.getElementById(id)
+  $('open-admin').href = withShare(baseHref() + 'admin.html')
+  function renderPanel (msg) {
+    $('signin-box').hidden = authed
+    $('signed-box').hidden = !authed
+    $('si-who').textContent = me ? (me.name || me.email) : ''
+    $('key-status').textContent = msg || ''
   }
-  document.getElementById('set-close').onclick = () => { settings.hidden = true }
-  document.getElementById('nav-menu').onclick = () => openSettings()
-  document.getElementById('set-save').onclick = async () => {
-    KEY = document.getElementById('set-key').value.trim()
-    localStorage.setItem('agileKey', KEY)
-    const ok = await checkKey()
-    document.getElementById('key-status').textContent = ok ? 'Key accepted: live controls are on.' : 'This key was rejected. Check adminKey in config.json.'
-    if (ok) {
-      const url = document.getElementById('set-url').value.trim()
-      try { await api('api/admin/config', { method: 'POST', body: { key: KEY, publicUrl: url } }); publicUrl = url } catch (_) {}
-      drawAllQr()
+  function openSettings (msg) {
+    renderPanel(msg)
+    settings.hidden = false
+    if (!authed) $('si-email').focus()
+  }
+  $('set-close').onclick = () => { settings.hidden = true }
+  $('nav-menu').onclick = () => openSettings()
+  $('signin-form').addEventListener('submit', async e => {
+    e.preventDefault()
+    try {
+      await api('auth/login', { method: 'POST', body: { email: $('si-email').value, password: $('si-pass').value } })
+      $('si-pass').value = ''
+      await checkAuth()
+      if (!authed) { renderPanel('This account is not an admin.'); return }
+      renderPanel('Signed in.')
       els[idx].querySelectorAll('.live').forEach(w => { w.dataset.built = ''; pollLive(w) })
-      settings.hidden = true
-    }
+      setTimeout(() => { settings.hidden = true }, 600)
+    } catch (err) { renderPanel(err.message) }
+  })
+  $('si-out').onclick = async () => {
+    try { await api('auth/logout', { method: 'POST', body: {} }) } catch (_) {}
+    authed = false; me = null
+    renderPanel('Signed out.')
+    els[idx].querySelectorAll('.live').forEach(w => { w.dataset.built = ''; pollLive(w) })
   }
   async function resetAll (keepPlayers) {
-    if (!keyOk) { document.getElementById('key-status').textContent = 'Save a valid key first.'; return }
-    const msg = keepPlayers ? 'Clear every answer and score? Students stay joined.' : 'Clear every answer, score and student? Everyone will need to join again.'
+    const msg = keepPlayers ? 'Clear every answer and score of this session? Students stay joined.' : 'Clear every answer, score and student of this session? Everyone will need to join again.'
     if (!confirm(msg)) return
-    await api('api/admin/reset-all', { method: 'POST', body: { key: KEY, keepPlayers } })
-    document.getElementById('key-status').textContent = keepPlayers ? 'All answers cleared.' : 'Answers and students cleared.'
-    refreshPlayers()
+    try {
+      await api('api/admin/reset-all', { method: 'POST', body: { keepPlayers } })
+      renderPanel(keepPlayers ? 'All answers cleared.' : 'Answers and students cleared.')
+      refreshPlayers()
+    } catch (e) { renderPanel(e.message) }
   }
-  document.getElementById('set-reset-answers').onclick = () => resetAll(true)
-  document.getElementById('set-reset-all').onclick = () => resetAll(false)
+  $('set-reset-answers').onclick = () => resetAll(true)
+  $('set-reset-all').onclick = () => resetAll(false)
 
   // ---------- QR overlay ----------
-  const overlay = document.getElementById('qr-overlay')
+  const overlay = $('qr-overlay')
   const toggleQr = () => { overlay.hidden = !overlay.hidden }
-  document.getElementById('hud').onclick = toggleQr
-  document.getElementById('qr-close').onclick = toggleQr
+  $('hud').onclick = toggleQr
+  $('qr-close').onclick = toggleQr
 
   // ---------- keyboard ----------
   document.addEventListener('keydown', e => {
@@ -359,14 +421,15 @@
       else if (k === 'r' || k === 'R') act(w, 'reveal')
     }
   })
-  document.getElementById('nav-next').onclick = next
-  document.getElementById('nav-prev').onclick = prev
+  $('nav-next').onclick = next
+  $('nav-prev').onclick = prev
   window.addEventListener('hashchange', () => { const [i, s] = fromHash(); if (i !== idx || s !== step) show(i, s) })
 
   // ---------- start ----------
   ;(async function init () {
-    try { publicUrl = (await api('api/config')).publicUrl || '' } catch (_) {}
-    await checkKey()
+    try { deck = Object.assign(deck, await api('api/deck')) } catch (e) { console.warn('Deck settings unavailable, using defaults:', e.message) }
+    build()
+    await checkAuth()
     drawAllQr()
     refreshPlayers()
     const [i, s] = fromHash()
@@ -374,6 +437,6 @@
     els[i].classList.add('active')
     enter(i)
     show(i, s)
-    if (!keyOk) setTimeout(() => openSettings('Enter the presenter key once to run live questions. It is saved in this browser.'), 600)
+    if (!authed) setTimeout(() => openSettings('Sign in once to run live questions. The session lasts 7 days in this browser.'), 600)
   })()
 })()
