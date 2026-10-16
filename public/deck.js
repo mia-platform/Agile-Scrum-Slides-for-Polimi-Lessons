@@ -75,7 +75,9 @@
     const sel = Array.isArray(deck.chapters) && deck.chapters.length ? new Set(deck.chapters) : null
     const media = deck.media || {}
     const replaced = new Set(ALL.filter(d => d.needsMedia && media[d.needsMedia]).flatMap(d => d.replaces || []))
-    SLIDES = ALL.filter((d, i) => !hidden.has(keys[i]) && (!sel || sel.has(d.chapter)) && (!d.needsMedia || media[d.needsMedia]) && !replaced.has(keys[i]))
+    SLIDES = window.DeckOrder.orderSlides(ALL, deck)
+      .filter(x => !hidden.has(x.key) && (!sel || sel.has(x.def.chapter)) && (!x.def.needsMedia || media[x.def.needsMedia]) && !replaced.has(x.key))
+      .map(x => x.def)
     if (!SLIDES.length) SLIDES = ALL
     stage.innerHTML = ''
     els = SLIDES.map((def, i) => {
