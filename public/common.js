@@ -6,7 +6,7 @@
     let p = location.pathname
     if (!p.endsWith('/')) {
       const last = p.split('/').pop()
-      p = last.includes('.') ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/'
+      p = (last.includes('.') || last === 'join') ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/'
     }
     return location.origin + p
   }
