@@ -492,6 +492,12 @@ app.use((err, _req, res, _next) => {
 })
 
 // ---- static pages ----
+// Default speaker photo, kept as base64 text so it survives any text-only file sync.
+const SPEAKER_JPG = (() => { try { return Buffer.from(fs.readFileSync(path.join(ROOT, 'assets', 'speaker.jpg.b64'), 'utf8').trim(), 'base64') } catch (_) { return null } })()
+app.get('/speaker.jpg', (_req, res) => {
+  if (!SPEAKER_JPG) return res.status(404).end()
+  res.set('Cache-Control', 'public, max-age=3600').type('image/jpeg').send(SPEAKER_JPG)
+})
 app.use(express.static(path.join(ROOT, 'public'), { extensions: ['html'] }))
 app.get('/join', (_req, res) => res.sendFile(path.join(ROOT, 'public', 'join.html')))
 
