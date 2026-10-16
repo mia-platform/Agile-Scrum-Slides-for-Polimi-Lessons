@@ -3,7 +3,12 @@
     "id": "q-exp",
     "type": "poll",
     "prompt": "How much do you already know about Agile and Scrum?",
-    "options": ["Never heard of it", "Only the theory", "Used it in a project", "I use it every day"],
+    "options": [
+      "Never heard of it",
+      "Only the theory",
+      "Used it in a project",
+      "I use it every day"
+    ],
     "points": 100
   },
   {
@@ -16,7 +21,12 @@
     "id": "q-waterfall",
     "type": "quiz",
     "prompt": "With the waterfall boat, when do we learn whether the user really wants to reach the island?",
-    "options": ["After the hull", "After the paint", "After the engine", "Only at the very end"],
+    "options": [
+      "After the hull",
+      "After the paint",
+      "After the engine",
+      "Only at the very end"
+    ],
     "correct": 3,
     "timer": 20,
     "points": 1000
@@ -39,7 +49,12 @@
     "id": "q-popular",
     "type": "quiz",
     "prompt": "According to the State of Agile report, which approach do most teams follow?",
-    "options": ["Kanban", "Scrum", "Extreme Programming (XP)", "SAFe"],
+    "options": [
+      "Kanban",
+      "Scrum",
+      "Extreme Programming (XP)",
+      "SAFe"
+    ],
     "correct": 1,
     "timer": 15,
     "points": 1000
@@ -48,7 +63,12 @@
     "id": "q-sprint",
     "type": "quiz",
     "prompt": "How long can a Scrum sprint last at most?",
-    "options": ["1 week", "Exactly 2 weeks", "Less than 1 month", "One quarter"],
+    "options": [
+      "1 week",
+      "Exactly 2 weeks",
+      "Less than 1 month",
+      "One quarter"
+    ],
     "correct": 2,
     "timer": 15,
     "points": 1000
@@ -57,8 +77,27 @@
     "id": "q-review",
     "type": "quiz",
     "prompt": "In which event does the team demo the potentially shippable product increment?",
-    "options": ["Sprint Planning", "Daily Scrum", "Sprint Review", "Sprint Retrospective"],
+    "options": [
+      "Sprint Planning",
+      "Daily Scrum",
+      "Sprint Review",
+      "Sprint Retrospective"
+    ],
     "correct": 2,
+    "timer": 15,
+    "points": 1000
+  },
+  {
+    "id": "q-artifacts",
+    "type": "quiz",
+    "prompt": "Which of these is NOT a Scrum artifact?",
+    "options": [
+      "Product Backlog",
+      "Sprint Backlog",
+      "Increment",
+      "Gantt chart"
+    ],
+    "correct": 3,
     "timer": 15,
     "points": 1000
   },
@@ -66,7 +105,12 @@
     "id": "q-owner",
     "type": "quiz",
     "prompt": "Who is accountable for the Product Backlog?",
-    "options": ["Scrum Master", "Product Owner", "Development Team", "Stakeholders"],
+    "options": [
+      "Scrum Master",
+      "Product Owner",
+      "Development Team",
+      "Stakeholders"
+    ],
     "correct": 1,
     "timer": 15,
     "points": 1000
@@ -75,7 +119,12 @@
     "id": "q-impediments",
     "type": "quiz",
     "prompt": "The team is blocked by another department. Who helps remove the impediment?",
-    "options": ["Product Owner", "The most senior developer", "Scrum Master", "The customer"],
+    "options": [
+      "Product Owner",
+      "The most senior developer",
+      "Scrum Master",
+      "The customer"
+    ],
     "correct": 2,
     "timer": 15,
     "points": 1000
@@ -98,7 +147,12 @@
     "id": "q-negotiable",
     "type": "quiz",
     "prompt": "In INVEST, which letter says a story is not a contract and can still be discussed?",
-    "options": ["I — Independent", "N — Negotiable", "V — Valuable", "T — Testable"],
+    "options": [
+      "I — Independent",
+      "N — Negotiable",
+      "V — Valuable",
+      "T — Testable"
+    ],
     "correct": 1,
     "timer": 15,
     "points": 1000
@@ -106,8 +160,25 @@
   {
     "id": "q-ai",
     "type": "poll",
-    "prompt": "Which phase of the SDLC would you hand to an AI agent first?",
-    "options": ["Plan & analyze", "Code", "Test", "Document"],
+    "prompt": "Human in the loop: where is the human most needed in this SDLC?",
+    "options": [
+      "Planning: deciding what is worth building",
+      "Design: architecture and trade-offs",
+      "Review: approving what the agents produce",
+      "Operations: incidents in production"
+    ],
+    "points": 100
+  },
+  {
+    "id": "q-loc-hour",
+    "type": "poll",
+    "prompt": "Your guess: in one hour, how many lines of working code does a developer write, and how many does Claude Opus 5.5?",
+    "options": [
+      "About 50 vs 500",
+      "About 50 vs 5,000",
+      "About 50 vs 50,000",
+      "About the same"
+    ],
     "points": 100
   },
   {
@@ -130,7 +201,44 @@
     "prompt": "One word about today’s lesson",
     "points": 100
   },
-  {"id":"q-loc","type":"quiz","prompt":"In one working day, roughly how many lines of code can a coding agent produce compared with a developer?","options":["About the same","2× more","10× more","100× more or beyond"],"correct":3,"timer":20,"points":1000},
-  {"id":"q-merges","type":"quiz","prompt":"Anthropic merged about 2,500 code changes per day in May 2026. How many per day by September?","options":["About 3,000","About 5,000","About 10,000","Over 30,000"],"correct":3,"timer":20,"points":1000},
-  {"id":"q-feel","type":"poll","prompt":"Agents are joining the team. How do you feel?","options":["Excited","Curious","A bit worried","Ready to ride the wave"],"points":100}
+  {
+    "id": "q-loc",
+    "type": "quiz",
+    "prompt": "In one working day, roughly how many lines of code can a coding agent produce compared with a developer?",
+    "options": [
+      "About the same",
+      "2× more",
+      "10× more",
+      "100× more or beyond"
+    ],
+    "correct": 3,
+    "timer": 20,
+    "points": 1000
+  },
+  {
+    "id": "q-merges",
+    "type": "quiz",
+    "prompt": "Anthropic merged about 2,500 code changes per day in May 2026. How many per day by September?",
+    "options": [
+      "About 3,000",
+      "About 5,000",
+      "About 10,000",
+      "Over 30,000"
+    ],
+    "correct": 3,
+    "timer": 20,
+    "points": 1000
+  },
+  {
+    "id": "q-feel",
+    "type": "poll",
+    "prompt": "Agents are joining the team. How do you feel?",
+    "options": [
+      "Excited",
+      "Curious",
+      "A bit worried",
+      "Ready to ride the wave"
+    ],
+    "points": 100
+  }
 ]
