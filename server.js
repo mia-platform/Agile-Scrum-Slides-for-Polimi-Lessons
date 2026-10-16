@@ -372,6 +372,27 @@ app.post('/api/admin/reset-all', admin, wrap(async (req, res) => {
   res.json({ ok: true })
 }))
 
+// Reset the results of any session (past or active). keepPlayers: keep the joined students.
+app.post('/api/admin/sessions/:id/reset', admin, wrap(async (req, res) => {
+  const id = Number(req.params.id)
+  const keepPlayers = !!(req.body && req.body.keepPlayers)
+  const { rows } = await pool.query('SELECT id FROM deck_sessions WHERE id = $1', [id])
+  if (!rows.length) return res.status(404).json({ error: 'Session not found' })
+  if (id === live.sessionId) {
+    // Clear the live state first, so answers arriving during the reset are refused instead of re-saved.
+    for (const r of Object.values(live.runs)) r.status = 'closed'
+    live.runs = {}
+    live.current = null
+    if (!keepPlayers) live.players = {}
+  }
+  await writes
+  await pool.query('DELETE FROM deck_answers WHERE session_id = $1', [id])
+  await pool.query('DELETE FROM deck_runs WHERE session_id = $1', [id])
+  if (!keepPlayers) await pool.query('DELETE FROM deck_players WHERE session_id = $1', [id])
+  await pool.query(`UPDATE deck_sessions SET config = config - 'current' WHERE id = $1`, [id])
+  res.json({ ok: true })
+}))
+
 app.post('/api/admin/config', admin, wrap(async (req, res) => {
   if (typeof req.body.publicUrl === 'string') await setSetting('publicUrl', req.body.publicUrl.trim())
   res.json({ ok: true, publicUrl: await getSetting('publicUrl', '') })
