@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var p = location.pathname
+      if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
+      document.write('<base href="' + location.origin + p + '">')
+    })()
+  </script>
+  <title>Introduction to Agile and Scrum · Polimi 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="deck.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>">
+</head>
+<body class="presenter">
+  <div id="viewport"><div id="stage"></div></div>
+
+  <button id="hud" title="Show the join QR code (Q)">
+    <span id="hud-qr"></span>
+    <span class="hud-text"><b id="hud-players">0</b> joined<br><small>tap Q to enlarge</small></span>
+  </button>
+
+  <nav id="nav">
+    <button id="nav-prev" aria-label="Previous">‹</button>
+    <span id="nav-count">1 / 1</span>
+    <button id="nav-next" aria-label="Next">›</button>
+    <button id="nav-menu" aria-label="Presenter settings">⚙</button>
+  </nav>
+  <div id="progress"><i></i></div>
+
+  <div id="qr-overlay" hidden>
+    <div class="qr-card">
+      <div id="qr-big"></div>
+      <div>
+        <h2>Join the lesson</h2>
+        <p>Scan with your phone camera, pick a nickname and answer live.</p>
+        <p class="qr-url" id="qr-url"></p>
+        <p class="qr-players"><b id="qr-players">0</b> students joined</p>
+        <button class="btn" id="qr-close">Close (Q)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings" hidden>
+    <div class="panel">
+      <h2>Presenter settings</h2>
+      <label>Presenter key
+        <input id="set-key" type="password" autocomplete="off" placeholder="Key from config.json">
+      </label>
+      <p class="hint" id="key-status"></p>
+      <label>Student link encoded in the QR code
+        <input id="set-url" type="url" placeholder="Leave empty to use this page's address">
+      </label>
+      <p class="hint">Use the public share link of this app followed by <code>join.html</code>, so students don't need a Flow login.</p>
+      <div class="row">
+        <button class="btn" id="set-save">Save</button>
+        <button class="btn ghost" id="set-reset-answers">Reset all answers</button>
+        <button class="btn ghost danger" id="set-reset-all">Reset answers and players</button>
+        <button class="btn ghost" id="set-close">Close</button>
+      </div>
+      <h3>Keyboard</h3>
+      <p class="keys"><kbd>→</kbd> <kbd>Space</kbd> next · <kbd>←</kbd> back · <kbd>F</kbd> fullscreen · <kbd>Q</kbd> QR code · <kbd>S</kbd> start · <kbd>X</kbd> stop · <kbd>R</kbd> reveal · <kbd>,</kbd> settings</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="common.js"></script>
+  <script src="slides.js"></script>
+  <script src="deck.js"></script>
+</body>
+</html>
