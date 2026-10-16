@@ -117,28 +117,23 @@
         <g class="wave slow" opacity=".7"><path d="${wavePath(740, 10, 120, 2000)}" stroke="#2FA3C4" stroke-width="3" fill="none"/></g>
         <g transform="translate(1180,600)" class="bob"><g transform="scale(1.4)">${sailboat().replace(seated(60), '')}</g></g>
       </svg>
-      <span class="tag">DSD lesson · Politecnico di Milano</span>
-      <h1 style="margin-top:28px">Introduction to Agile and Scrum</h1>
-      <p class="meta">Polimi, October 20, 2026 — Giulio Roggero</p>`
+      <span class="tag" data-deck="tag">DSD lesson · Politecnico di Milano</span>
+      <h1 style="margin-top:28px" data-deck="title">Introduction to Agile and Scrum</h1>
+      <p class="meta" data-deck="subtitle">Polimi, October 20, 2026 — Giulio Roggero</p>`
   })
 
   // ---------- 2. Speaker ----------
   add({
+    key: 'speaker',
     html: `
-      <h2>Hello! I’m Giulio Roggero</h2>
-      <div class="cols" style="grid-template-columns:1.25fr 1fr">
-        <div>
-          <p class="lead">Co-Founder and CTO of Mia-Platform, the solution to streamline your AI DLC and build Cloud Native Applications starting from green fields or existing legacy systems.</p>
-          <p style="margin-top:40px"><span class="tag">linkedin.com/in/giulioroggero</span></p>
-        </div>
-        <div class="card">
-          <h3>My principal focus</h3>
-          <ul>
-            <li>Agentic Software Development Life Cycle</li>
-            <li>Platform Engineering</li>
-            <li>Business Composability</li>
-            <li>Data Fabric</li>
-          </ul>
+      <div class="speaker">
+        <img class="sp-photo" data-deck-img="speaker.photo" src="speaker.jpg" alt="Photo of the speaker">
+        <div class="sp-text">
+          <h2>Hello! I’m <span data-deck="speaker.name">Giulio Roggero</span></h2>
+          <p class="sp-role" data-deck="speaker.role">CTO &amp; Co-Founder, Mia-Platform</p>
+          <p class="lead sp-bio" data-deck="speaker.bio"></p>
+          <div class="sp-focus" data-deck-list="speaker.focus"></div>
+          <p class="sp-links"><span class="tag" data-deck="speaker.linkedin">linkedin.com/in/giulioroggero</span></p>
         </div>
       </div>`
   })
@@ -927,7 +922,7 @@
         <g class="wave" opacity=".7"><path d="${wavePath(760, 10, 120, 2000)}" stroke="#2FA3C4" stroke-width="3" fill="none"/></g>
       </svg>
       <h1>Thank you!</h1>
-      <p class="meta">Giulio Roggero — CTO &amp; co-founder, Mia-Platform<br>giulio.roggero@mia-platform.eu</p>`
+      <p class="meta"><span data-deck="speaker.name">Giulio Roggero</span> — <span data-deck="speaker.role">CTO &amp; Co-Founder, Mia-Platform</span><br><span data-deck="speaker.email">giulio.roggero@mia-platform.eu</span></p>`
   })
 
   // count-up helper used by onStep handlers
