@@ -1,4 +1,4 @@
-// Shared helpers for the presenter deck and the student page.
+// Shared helpers for the presenter deck, the student page and the admin console.
 // Every URL is relative to the page's folder, so the app works the same under the
 // Flow preview prefix, a public share link, or a plain host. A flow_share token in the
 // page URL is carried over to API calls and to the student link.
@@ -36,5 +36,19 @@
   function esc (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
   }
-  window.Live = { baseHref, apiUrl, api, esc, withShare }
+  function plain (html) {
+    return String(html || '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&[a-z#0-9]+;/gi, '').replace(/\s+/g, ' ').trim()
+  }
+  // A readable title for a slide definition, and a stable key used to hide slides per session.
+  function slideTitle (def) {
+    if (def.q) return 'Live question: ' + def.q
+    const m = /<h[12][^>]*>([\s\S]*?)<\/h[12]>/.exec(def.html || '')
+    return m ? plain(m[1]) : plain(def.html).slice(0, 60) || 'Untitled slide'
+  }
+  function slideKey (def) {
+    if (def.key) return def.key
+    if (def.q) return 'q:' + def.q
+    return 't:' + slideTitle(def).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60)
+  }
+  window.Live = { baseHref, apiUrl, api, esc, withShare, slideTitle, slideKey }
 })()
