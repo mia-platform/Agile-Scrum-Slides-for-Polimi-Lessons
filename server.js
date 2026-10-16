@@ -268,7 +268,6 @@ app.post('/api/admin/question/:id/:action', admin, (req, res) => {
       r.revealed = true
       state.current = q.id
       break
-app.get('/', (_req, res) => res.sendFile(path.join(ROOT, 'public', 'join.html'))) // TEMP visual check
     case 'reset':
       state.runs[q.id] = { status: 'idle', startedAt: null, endsAt: null, revealed: false, answers: {}, hidden: [] }
       if (state.current === q.id) state.current = null
