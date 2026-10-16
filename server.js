@@ -495,6 +495,16 @@ app.use((err, _req, res, _next) => {
 app.use(express.static(path.join(ROOT, 'public'), { extensions: ['html'] }))
 app.get('/join', (_req, res) => res.sendFile(path.join(ROOT, 'public', 'join.html')))
 
+
+// On a stop or restart, write pending answers to the database before exiting.
+let stopping = false
+async function shutdown () {
+  if (stopping) return
+  stopping = true
+  try { await Promise.race([writes, new Promise(resolve => setTimeout(resolve, 8000))]) } finally { process.exit(0) }
+}
+process.on('SIGTERM', shutdown)
+process.on('SIGINT', shutdown)
 const port = Number(process.env.PORT) || 3000
 app.listen(port, '0.0.0.0', () => {
   console.log(`Agile live deck listening on port ${port}`)
