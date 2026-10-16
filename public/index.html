@@ -50,23 +50,30 @@
 
   <div id="settings" hidden>
     <div class="panel">
-      <h2>Presenter settings</h2>
-      <label>Presenter key
-        <input id="set-key" type="password" autocomplete="off" placeholder="Key from config.json">
-      </label>
-      <p class="hint" id="key-status"></p>
-      <label>Student link encoded in the QR code
-        <input id="set-url" type="url" placeholder="Leave empty to use this page's address">
-      </label>
-      <p class="hint">Use the public share link of this app followed by <code>join.html</code>, so students don't need a Flow login.</p>
+      <h2>Presenter</h2>
+      <div id="signin-box">
+        <p class="hint">Sign in with your admin account to run the live questions.</p>
+        <form id="signin-form">
+          <label>Email <input id="si-email" type="email" autocomplete="username" required></label>
+          <label>Password <input id="si-pass" type="password" autocomplete="current-password" required></label>
+          <div class="row"><button class="btn" type="submit">Sign in</button></div>
+        </form>
+      </div>
+      <div id="signed-box" hidden>
+        <p class="hint">Signed in as <b id="si-who"></b>. Live controls are on.</p>
+        <div class="row">
+          <button class="btn ghost" id="set-reset-answers">Reset all answers</button>
+          <button class="btn ghost danger" id="set-reset-all">Reset answers and players</button>
+          <button class="btn ghost" id="si-out">Sign out</button>
+        </div>
+      </div>
+      <p class="hint" id="key-status" role="status"></p>
       <div class="row">
-        <button class="btn" id="set-save">Save</button>
-        <button class="btn ghost" id="set-reset-answers">Reset all answers</button>
-        <button class="btn ghost danger" id="set-reset-all">Reset answers and players</button>
+        <a class="btn ghost" id="open-admin" href="admin.html" target="_blank" rel="noopener">Open the admin console</a>
         <button class="btn ghost" id="set-close">Close</button>
       </div>
       <h3>Keyboard</h3>
-      <p class="keys"><kbd>→</kbd> <kbd>Space</kbd> next · <kbd>←</kbd> back · <kbd>F</kbd> fullscreen · <kbd>Q</kbd> QR code · <kbd>S</kbd> start · <kbd>X</kbd> stop · <kbd>R</kbd> reveal · <kbd>,</kbd> settings</p>
+      <p class="keys"><kbd>→</kbd> <kbd>Space</kbd> next · <kbd>←</kbd> back · <kbd>F</kbd> fullscreen · <kbd>Q</kbd> QR code · <kbd>S</kbd> start · <kbd>X</kbd> stop · <kbd>R</kbd> reveal · <kbd>,</kbd> presenter panel · <kbd>H</kbd> hide QR corner</p>
     </div>
   </div>
 
