@@ -137,7 +137,7 @@
       const left = Math.max(0, q.endsAt - now)
       $('timer').textContent = Math.ceil(left / 1000) + 's'
       $('tbar').hidden = false
-      const total = q._total || (q._total = Math.max(left, 1))
+      const total = Math.max(1, q.endsAt - (q.startedAt || q.endsAt - left))
       $('tbar').querySelector('i').style.width = Math.min(100, left / total * 100) + '%'
     } else {
       $('timer').textContent = ''
@@ -149,7 +149,6 @@
     try {
       const d = await api('api/public/state?pid=' + encodeURIComponent(pid))
       offset = d.serverNow - Date.now()
-      if (last && last.current && d.current && last.current.id === d.current.id && last.current.endsAt === d.current.endsAt) d.current._total = last.current._total
       last = d
       render(d)
     } catch (err) {
