@@ -72,6 +72,16 @@
     .slides label { font-weight: 400; display: flex; gap: 8px; align-items: baseline; padding: 3px 0; break-inside: avoid; font-size: 14px; }
     .slides label span.n { color: var(--mist); min-width: 26px; font-variant-numeric: tabular-nums; }
     .slides label.off { color: var(--mist); text-decoration: line-through; }
+    .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 10px; }
+    .chap { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; border: 2px solid var(--line); background: var(--lagoon); cursor: pointer; font-weight: 400; }
+    .chap input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+    .chap b { display: block; font-family: var(--display); font-size: 17px; }
+    .chap small { display: block; color: var(--sea); font-weight: 600; font-size: 13px; margin: 2px 0 4px; }
+    .chap em { display: block; font-style: normal; font-size: 13px; color: var(--mist); line-height: 1.35; }
+    .chap.on { border-color: var(--sea); background: var(--white); }
+    .sl-group { break-inside: avoid; margin-bottom: 14px; }
+    .sl-group h4 { margin: 0 0 4px; font-size: 14px; color: var(--sea); }
+    .sl-group.skip { opacity: .4; }
     .count { font-size: 13px; color: var(--mist); text-align: right; }
     .auth { max-width: 440px; margin: 60px auto; }
     .bars .q { margin-bottom: 18px; }
@@ -135,7 +145,7 @@
         <h2>Lesson sessions</h2>
         <p class="hint">Each session keeps its own students, answers and scores, plus its own titles, speaker, slides and questions. Only the active session receives answers.</p>
         <div class="table-wrap"><table>
-          <thead><tr><th>Session</th><th>Date</th><th>Place</th><th>Status</th><th>Students</th><th>Answers</th><th></th></tr></thead>
+          <thead><tr><th>Session</th><th>Date</th><th>Place</th><th>Status</th><th>Students</th><th>Answers</th><th>Chapters</th><th></th></tr></thead>
           <tbody id="sess-rows"></tbody>
         </table></div>
         <div class="msg" id="sess-msg" role="status"></div>
@@ -190,8 +200,17 @@
         <div class="count" id="e-sbio-count"></div>
         <label style="margin-top:6px">Focus areas <small>comma separated</small><input type="text" id="e-sfocus"></label>
 
+        <h3>Chapters to present</h3>
+        <p class="hint">Pick the chapters for this lesson: the deck, the agenda slide and the slide numbers follow your choice.
+          Quick picks: <button class="btn ghost small" type="button" data-preset="all">Everything</button>
+          <button class="btn ghost small" type="button" data-preset="agile">Agile &amp; Scrum</button>
+          <button class="btn ghost small" type="button" data-preset="agentic">Agentic SDLC talk</button>
+          <button class="btn ghost small" type="button" data-preset="platform">Platform engineering talk</button></p>
+        <div class="chapters" id="e-chapters"></div>
+        <p class="hint" id="e-ch-summary" role="status"></p>
+
         <h3>Slides</h3>
-        <p class="hint">Untick a slide to hide it in this session. <a href="#" id="sl-all">Show all</a></p>
+        <p class="hint">Inside the selected chapters, untick a slide to skip it. Greyed groups belong to chapters you did not select. <a href="#" id="sl-all">Show all slides</a></p>
         <div class="slides" id="e-slides"></div>
 
         <h3>Live questions</h3>
