@@ -110,6 +110,7 @@ function publicQuestion (qid) {
     options: q.options || [],
     status: r.status,
     endsAt: r.endsAt,
+    startedAt: r.startedAt,
     revealed: r.revealed,
     correct: r.revealed && q.type === 'quiz' ? q.correct : null
   }
