@@ -536,6 +536,18 @@ app.get('/speaker.jpg', (_req, res) => {
   if (!SPEAKER_JPG) return res.status(404).end()
   res.set('Cache-Control', 'public, max-age=3600').type('image/jpeg').send(SPEAKER_JPG)
 })
+// Images kept as base64 text in assets/ (text survives the preview's file sync): /img/<name> → assets/<name>.b64
+const IMG_TYPES = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', svg: 'image/svg+xml' }
+const imgCache = {}
+app.get('/img/:name', (req, res) => {
+  const name = req.params.name
+  const ext = (name.split('.').pop() || '').toLowerCase()
+  if (!/^[a-z0-9._-]+$/i.test(name) || !IMG_TYPES[ext]) return res.status(404).end()
+  if (!imgCache[name]) {
+    try { imgCache[name] = Buffer.from(fs.readFileSync(path.join(ROOT, 'assets', name + '.b64'), 'utf8').trim(), 'base64') } catch (_) { return res.status(404).end() }
+  }
+  res.set('Cache-Control', 'public, max-age=3600').type(IMG_TYPES[ext]).send(imgCache[name])
+})
 app.use(express.static(path.join(ROOT, 'public'), { extensions: ['html'] }))
 app.get('/join', (_req, res) => res.sendFile(path.join(ROOT, 'public', 'join.html')))
 
