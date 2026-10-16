@@ -36,6 +36,7 @@ function emptyState () {
 }
 let state = Object.assign(emptyState(), readJson(STATE_FILE, {}))
 
+if (!state.publicUrl) state.publicUrl = baseConfig.publicUrl || ''
 let saveTimer = null
 function save () {
   if (saveTimer) return
