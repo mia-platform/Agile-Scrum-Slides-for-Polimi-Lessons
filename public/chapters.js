@@ -36,3 +36,39 @@
   }
   window.CHAPTERS = CHAPTERS
 })()
+
+// ---------- per-session order ----------
+// cfg.chapterOrder: [chapterId, …]   cfg.slideOrder: { chapterId: [slideKey, …] }
+// Saved ids that no longer exist are ignored; chapters and slides not in the saved order keep
+// their default place at the end, so new slides added to the code still show up.
+;(function () {
+  const { slideKey } = window.Live
+  function slideKeysFor (list) {
+    const seen = {}
+    return list.map(d => {
+      let k = slideKey(d)
+      if (seen[k]) { seen[k]++; k = k + '-' + seen[k] } else seen[k] = 1
+      return k
+    })
+  }
+  function orderedChapters (cfg) {
+    const all = window.CHAPTERS || []
+    const saved = (cfg && Array.isArray(cfg.chapterOrder) ? cfg.chapterOrder : []).map(id => all.find(c => c.id === id)).filter(Boolean)
+    return [...new Set([...saved, ...all])]
+  }
+  function orderSlides (list, cfg) {
+    const keys = slideKeysFor(list)
+    const items = list.map((def, index) => ({ def, key: keys[index], index }))
+    const saved = (cfg && cfg.slideOrder && typeof cfg.slideOrder === 'object') ? cfg.slideOrder : {}
+    const out = []
+    for (const ch of orderedChapters(cfg)) {
+      const group = items.filter(x => x.def.chapter === ch.id)
+      const want = Array.isArray(saved[ch.id]) ? saved[ch.id] : []
+      const first = want.map(k => group.find(x => x.key === k)).filter(Boolean)
+      out.push(...new Set([...first, ...group]))
+    }
+    const placed = new Set(out)
+    return out.concat(items.filter(x => !placed.has(x)))
+  }
+  window.DeckOrder = { slideKeysFor, orderedChapters, orderSlides }
+})()
