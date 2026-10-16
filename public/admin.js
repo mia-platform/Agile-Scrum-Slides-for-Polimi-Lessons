@@ -177,6 +177,7 @@
     const sp = c.speaker || {}
     $('e-session').value = s.id
     $('e-status').textContent = s.status
+    $('e-pdf').href = withShare(baseHref() + 'index.html?print=1&session=' + s.id)
     $('e-status').className = 'status ' + s.status
     $('e-activate').hidden = s.status === 'active'
     $('e-name').value = s.name || ''
@@ -421,6 +422,33 @@
       a.download = `session-${id}-${(d.session.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`
       document.body.appendChild(a); a.click(); a.remove()
     } catch (e) { $('r-summary').textContent = e.message }
+  }
+
+  // ---------- reset results ----------
+  $('r-reset').onclick = async () => {
+    const id = $('r-session').value
+    await loadSessions()
+    $('r-session').value = id
+    const s = sessions.find(x => String(x.id) === String(id))
+    if (!s) return
+    $('reset-what').textContent = `“${s.name}” has ${s.players} student${s.players === 1 ? '' : 's'} and ${s.answers} answer${s.answers === 1 ? '' : 's'}.` +
+      (s.status === 'active' ? ' It is the active session: the live deck and the students’ phones are cleared right away.' : '')
+    document.querySelector('input[name=rkeep][value=keep]').checked = true
+    msg('reset-msg', '')
+    $('reset-dlg').showModal()
+  }
+  $('reset-go').onclick = async () => {
+    const id = $('r-session').value
+    const keepPlayers = document.querySelector('input[name=rkeep]:checked').value === 'keep'
+    $('reset-go').disabled = true
+    try {
+      await api(`api/admin/sessions/${id}/reset`, { method: 'POST', body: { keepPlayers } })
+      $('reset-dlg').close()
+      await loadSessions()
+      $('r-session').value = id
+      await loadResults(id)
+      $('r-summary').textContent = (keepPlayers ? 'Answers and scores cleared. ' : 'Answers, scores and students cleared. ') + $('r-summary').textContent
+    } catch (e) { msg('reset-msg', e.message, 'err') } finally { $('reset-go').disabled = false }
   }
 
   // ---------- account ----------

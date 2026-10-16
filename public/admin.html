@@ -95,6 +95,14 @@
     .sl-row.off > label { color: var(--mist); text-decoration: line-through; }
     .sl-row .mv { opacity: .25; }
     .sl-row:hover .mv, .sl-row:focus-within .mv { opacity: 1; }
+    dialog { border: 0; border-radius: 18px; padding: 26px 28px; width: min(540px, 92vw); color: var(--deep); box-shadow: 0 20px 60px rgba(11, 37, 64, .35); }
+    dialog::backdrop { background: rgba(11, 37, 64, .6); }
+    dialog .opt { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; margin-top: 10px; font-weight: 400; cursor: pointer; }
+    dialog .opt:has(input:checked) { border-color: var(--danger); background: #FFF4F1; }
+    dialog .opt input { margin-top: 4px; }
+    dialog .opt b { display: block; }
+    dialog .opt small { display: block; color: var(--mist); font-size: 14px; }
+    .btn.danger-solid { background: var(--danger); color: var(--white); }
     .count { font-size: 13px; color: var(--mist); text-align: right; }
     .auth { max-width: 440px; margin: 60px auto; }
     .bars .q { margin-bottom: 18px; }
@@ -240,6 +248,7 @@
           <button class="btn" id="e-save">Save changes</button>
           <button class="btn go" id="e-activate">Make this the active session</button>
           <a class="btn ghost" id="e-preview" href="index.html" target="_blank" rel="noopener">Open presenter</a>
+          <a class="btn ghost" id="e-pdf" href="index.html?print=1" target="_blank" rel="noopener" title="Uses the saved settings of this session">Export to PDF</a>
         </div>
         <div class="msg" id="e-msg" role="status"></div>
       </div>
@@ -250,7 +259,7 @@
       <div class="panel">
         <div class="row" style="margin-top:0;justify-content:space-between">
           <h2 style="margin:0">Results <select id="r-session" style="display:inline-block;width:auto;margin-left:8px"></select></h2>
-          <button class="btn ghost small" id="r-export">Download all data (JSON)</button>
+          <span class="row" style="margin-top:0"><button class="btn ghost small" id="r-export">Download all data (JSON)</button><button class="btn danger small" id="r-reset">Reset results</button></span>
         </div>
         <p class="hint" id="r-summary"></p>
         <div class="grid" style="grid-template-columns:minmax(260px,1fr) 2fr;align-items:start">
@@ -286,6 +295,20 @@
       </div>
     </section>
   </main>
+  <dialog id="reset-dlg" aria-labelledby="reset-title">
+    <form method="dialog">
+      <h2 id="reset-title">Reset the results?</h2>
+      <p id="reset-what"></p>
+      <label class="opt"><input type="radio" name="rkeep" value="keep" checked><span><b>Clear answers and scores</b><small>Students stay joined and can keep playing.</small></span></label>
+      <label class="opt"><input type="radio" name="rkeep" value="all"><span><b>Clear everything</b><small>Answers, scores and students: everyone has to scan the QR code and join again.</small></span></label>
+      <p class="hint">This can’t be undone. Use “Download all data” first if you want a copy.</p>
+      <div class="row">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn danger-solid" type="button" id="reset-go">Reset results</button>
+      </div>
+      <div class="msg err" id="reset-msg" role="alert"></div>
+    </form>
+  </dialog>
 
   <script>document.write('<script src="' + __asset('common.js') + '"><\/script>')</script>
   <script>document.write('<script src="' + __asset('slides.js') + '"><\/script>')</script>

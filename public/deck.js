@@ -6,6 +6,10 @@
   const ALL = window.SLIDES
   let SLIDES = ALL
   const stage = document.getElementById('stage')
+  // Export to PDF: index.html?print=1 lays every slide out as a page (admins can add &session=ID)
+  const PQS = new URLSearchParams(location.search)
+  const PRINT = PQS.has('print')
+  const PRINT_SESSION = PQS.get('session')
   const SHAPES = ['▲', '◆', '●', '■']
   const WORD_COLORS = ['#0B2540', '#1C7C9C', '#FF5A36', '#2E9E6B', '#D9A21B', '#12365A']
 
@@ -119,6 +123,7 @@
   }
 
   function show (i, st) {
+    if (PRINT) return
     const changed = i !== idx || !els[i].classList.contains('active')
     if (changed) {
       if (els[idx]) els[idx].classList.remove('active')
@@ -371,6 +376,7 @@
   const settings = document.getElementById('settings')
   const $ = id => document.getElementById(id)
   $('open-admin').href = withShare(baseHref() + 'admin.html')
+  $('open-pdf').href = withShare(baseHref() + 'index.html?print=1')
   function renderPanel (msg) {
     $('signin-box').hidden = authed
     $('signed-box').hidden = !authed
@@ -447,10 +453,48 @@
   window.addEventListener('hashchange', () => { const [i, s] = fromHash(); if (i !== idx || s !== step) show(i, s) })
 
   // ---------- start ----------
+  // ---------- export to PDF ----------
+  async function printDeck () {
+    document.body.classList.add('print-mode')
+    window.removeEventListener('resize', fit)
+    stage.style.transform = ''
+    const zoom = () => document.documentElement.style.setProperty('--pz', Math.min(1, (window.innerWidth - 40) / 1600))
+    zoom()
+    window.addEventListener('resize', zoom)
+    const bar = document.createElement('div')
+    bar.id = 'print-bar'
+    bar.innerHTML = '<b>' + esc(deck.title || 'Deck') + '</b><span>' + SLIDES.length + ' slides</span><span id="print-status">Preparing the pages…</span>' +
+      '<button class="btn" id="print-go" disabled>Save as PDF</button>' +
+      '<small>In the print dialog pick “Save as PDF” as the destination: page size, margins and backgrounds are already set.</small>'
+    document.body.prepend(bar)
+    await refreshPlayers()
+    els.forEach((el, i) => {
+      const def = SLIDES[i]
+      el.classList.add('active')
+      try { if (def.onEnter) def.onEnter(el) } catch (e) { console.error(e) }
+      applyStep(i, def.steps || 0)
+      el.querySelectorAll('.live[data-q]').forEach(w => pollLive(w))
+      el.querySelectorAll('[data-board]').forEach(b => renderBoard(b, Number(b.dataset.board) || 10))
+      el.querySelectorAll('[data-podium]').forEach(p => renderPodium(p))
+      const jp = el.querySelector('[data-players]')
+      if (jp) jp.textContent = players
+    })
+    drawAllQr()
+    const imgs = [...document.images].map(img => img.complete ? null : new Promise(resolve => { img.onload = img.onerror = resolve }))
+    await Promise.all([document.fonts ? document.fonts.ready : null, ...imgs])
+    await new Promise(resolve => setTimeout(resolve, 2200))
+    document.getElementById('print-status').textContent = 'Ready'
+    const go = document.getElementById('print-go')
+    go.disabled = false
+    go.onclick = () => window.print()
+    window.print()
+  }
+
   ;(async function init () {
-    try { deck = Object.assign(deck, await api('api/deck')) } catch (e) { console.warn('Deck settings unavailable, using defaults:', e.message) }
+    try { deck = Object.assign(deck, await api('api/deck' + (PRINT_SESSION ? '?session=' + encodeURIComponent(PRINT_SESSION) : ''))) } catch (e) { console.warn('Deck settings unavailable, using defaults:', e.message) }
     build()
     await checkAuth()
+    if (PRINT) return printDeck()
     drawAllQr()
     refreshPlayers()
     const [i, s] = fromHash()

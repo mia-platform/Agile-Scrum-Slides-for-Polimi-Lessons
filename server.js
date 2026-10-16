@@ -227,12 +227,23 @@ const admin = requireRole('admin')
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
 // ----- public: deck configuration of the active session -----
-app.get('/api/deck', wrap(async (_req, res) => {
-  const c = live.config
-  res.json({
-    sessionId: live.sessionId, tag: c.tag, title: c.title, subtitle: c.subtitle, speaker: c.speaker,
-    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, chapterOrder: c.chapterOrder || null, slideOrder: c.slideOrder || null, publicUrl: await getSetting('publicUrl', ''),
-    media: await mediaIndex()
+async function deckPayload (c, sessionId) {
+  return {
+    sessionId, tag: c.tag, title: c.title, subtitle: c.subtitle, speaker: c.speaker,
+    hiddenSlides: c.hiddenSlides || [], chapters: c.chapters || null, chapterOrder: c.chapterOrder || null, slideOrder: c.slideOrder || null,
+    publicUrl: await getSetting('publicUrl', ''), media: await mediaIndex()
+  }
+}
+// The active session for everyone; another session (?session=ID, used by "Export to PDF") for admins.
+app.get('/api/deck', wrap(async (req, res, next) => {
+  const sid = Number(req.query.session)
+  if (!sid || sid === live.sessionId) return res.json(await deckPayload(live.config, live.sessionId))
+  admin(req, res, async () => {
+    try {
+      const { rows } = await pool.query('SELECT config FROM deck_sessions WHERE id = $1', [sid])
+      if (!rows.length) return res.status(404).json({ error: 'Session not found' })
+      res.json(await deckPayload(Object.assign(defaultConfig(), cleanConfig(rows[0].config)), sid))
+    } catch (e) { next(e) }
   })
 }))
 app.get('/api/config', wrap(async (_req, res) => res.json({ publicUrl: await getSetting('publicUrl', '') })))
