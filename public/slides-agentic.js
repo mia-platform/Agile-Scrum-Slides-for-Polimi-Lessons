@@ -354,6 +354,42 @@
       <p class="lead" data-step="4" style="margin-top:auto;color:var(--deep);font-family:var(--display);font-weight:800;font-size:48px">People make sure the agents go in that direction.</p>`
   })
 
+  F.push({
+    key: 'official-framework-vs-industry-adaptation',
+    html: `<h2 style="font-size:54px;margin-bottom:20px">Official Framework vs. Industry Adaptation</h2>
+      <p style="font-size:25px;line-height:1.4;margin:0 0 24px;color:var(--mist)">The Scrum Guide is intentionally lightweight and “purposefully incomplete”. It defines accountabilities, events, and artifacts, but deliberately avoids prescribing specific tools, team sizing techniques, story points, or day-to-day tactics.</p>
+      <table style="width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:23px;line-height:1.35;border:2px solid var(--line);border-radius:18px;overflow:hidden">
+        <colgroup><col style="width:15%"><col style="width:34%"><col style="width:51%"></colgroup>
+        <thead><tr style="background:var(--deep);color:var(--white)">
+          <th scope="col" style="padding:18px;text-align:left">Aspect</th>
+          <th scope="col" style="padding:18px;text-align:left">What the Official Scrum Guide Says (2020)</th>
+          <th scope="col" style="padding:18px;text-align:left">How AI-Era Teams Are Adapting (Industry Evidence)</th>
+        </tr></thead>
+        <tbody>
+          <tr style="background:var(--white)">
+            <th scope="row" style="padding:18px;text-align:left;vertical-align:top;color:var(--sea)">Team Size</th>
+            <td style="padding:18px;vertical-align:top">Typically 10 or fewer people to maximize communication.</td>
+            <td style="padding:18px;vertical-align:top">Shrinking to <strong>3–5 people</strong> as AI copilots absorb routine work and generalists cross functional boundaries.</td>
+          </tr>
+          <tr style="background:var(--lagoon)">
+            <th scope="row" style="padding:18px;text-align:left;vertical-align:top;color:var(--sea)">Events</th>
+            <td style="padding:18px;vertical-align:top">5 formal events (Sprint, Planning, Daily Scrum, Review, Retrospective).</td>
+            <td style="padding:18px;vertical-align:top">Events remain, but execution changes (e.g., async AI-summarized standups, shorter planning as AI drafts backlogs).</td>
+          </tr>
+          <tr style="background:var(--white)">
+            <th scope="row" style="padding:18px;text-align:left;vertical-align:top;color:var(--sea)">Accountabilities</th>
+            <td style="padding:18px;vertical-align:top">Product Owner, Scrum Master, Developers.</td>
+            <td style="padding:18px;vertical-align:top">Roles remain intact, but focus shifts (e.g., POs focus on intent &amp; validation; Devs focus on architecture and AI review).</td>
+          </tr>
+          <tr style="background:var(--lagoon)">
+            <th scope="row" style="padding:18px;text-align:left;vertical-align:top;color:var(--sea)">Tooling &amp; AI</th>
+            <td style="padding:18px;vertical-align:top">Completely unmentioned; framework is tool-agnostic.</td>
+            <td style="padding:18px;vertical-align:top">Treated as a “teammate” or cognitive force multiplier (e.g., Scrum.org’s <em>AI Teammate Framework</em>).</td>
+          </tr>
+        </tbody>
+      </table>`
+  })
+
   const HARN = [
     ['Intent & constraints', 'what is worth building, and what must never happen', 700, 70],
     ['Context & playbooks', 'the right knowledge, skills and tools', 1230, 300],
