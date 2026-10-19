@@ -454,3 +454,19 @@ body.print-mode .slide .up-anim { animation-delay: -2.5s !important; animation-p
   .print-mode .slide { margin: 0 !important; box-shadow: none !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
+
+/* Slide chooser and single-slide previews */
+#nav #nav-count { width:auto; max-width:min(48vw,330px); min-width:88px; padding:0 10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:15px; }
+#slide-jump { position:fixed; right:18px; bottom:78px; z-index:35; width:min(520px,calc(100vw - 24px)); max-height:calc(100dvh - 100px); overflow:auto; background:var(--white); color:var(--deep); border:1px solid var(--line); border-radius:16px; padding:18px; box-shadow:0 12px 50px #0B254033; font-size:16px; }
+#slide-jump[hidden] { display:none; }
+#slide-jump .jump-heading { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+#slide-jump button { font:inherit; border:1px solid var(--line); border-radius:8px; padding:8px 14px; background:var(--lagoon); color:var(--deep); cursor:pointer; }
+#slide-jump #jump-close { border:0; background:none; font-size:26px; padding:0 8px; }
+#slide-jump form { display:flex; gap:10px; align-items:center; margin-bottom:14px; }
+#slide-jump input { width:80px; min-width:0; border:1px solid var(--line); padding:8px; border-radius:8px; font:inherit; }
+#slide-jump select { display:block; width:100%; border:1px solid var(--line); padding:10px; border-radius:8px; font:inherit; margin:5px 0 12px; color:var(--deep); background:white; }
+#slide-jump iframe { display:block; width:100%; height:auto; aspect-ratio:16/9; border:1px solid var(--line); border-radius:6px; background:var(--lagoon); margin-bottom:12px; }
+#slide-jump #jump-present { width:100%; background:var(--sea); border-color:var(--sea); color:white; font-weight:600; }
+body.single-preview #hud, body.single-preview #nav, body.single-preview #progress, body.single-preview #settings, body.single-preview #qr-overlay, body.single-preview #slide-jump { display:none !important; }
+body.single-preview .live .bar-row button, body.single-preview .live .msg { display:none !important; }
+.print-mode #slide-jump, .print-mode #single-slide-dialog { display:none !important; }
