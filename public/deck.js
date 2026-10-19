@@ -99,6 +99,7 @@
       return s
     })
     if (deck.title) document.title = deck.title
+    ;['nav-count', 'nav-prev', 'nav-next'].forEach(id => { document.getElementById(id).disabled = false })
   }
 
   function fit () {
@@ -224,6 +225,7 @@
     jumpButton.focus()
   }
   function openJump () {
+    if (!slideEntries.length) return
     jumpSelect.innerHTML = slideEntries.map((entry, i) => `<option value="${i}">${i + 1}. ${esc(window.Live.slideTitle(entry.def))}</option>`).join('')
     jumpNumber.max = SLIDES.length
     jump.hidden = false
@@ -538,7 +540,7 @@
 
   // ---------- keyboard ----------
   document.addEventListener('keydown', e => {
-    if (PREVIEW_KEY) return
+    if (PREVIEW_KEY || !els.length) return
     if (!jump.hidden) { if (e.key === 'Escape') { e.preventDefault(); closeJump() }; return }
     if (e.target.closest('button, a') && (e.key === 'Enter' || e.key === ' ')) return
     if (e.target.closest('input, textarea, select')) { if (e.key === 'Escape') settings.hidden = true; return }
