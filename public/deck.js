@@ -10,6 +10,9 @@
   const PQS = new URLSearchParams(location.search)
   const PRINT = PQS.has('print')
   const PRINT_SESSION = PQS.get('session')
+  const PREVIEW_KEY = PQS.get('preview')
+  const START_KEY = PQS.get('slide')
+  let slideEntries = []
   const SHAPES = ['▲', '◆', '●', '■']
   const WORD_COLORS = ['#0B2540', '#1C7C9C', '#FF5A36', '#2E9E6B', '#D9A21B', '#12365A']
 
@@ -79,10 +82,12 @@
     const sel = Array.isArray(deck.chapters) && deck.chapters.length ? new Set(deck.chapters) : null
     const media = deck.media || {}
     const replaced = new Set(ALL.filter(d => d.needsMedia && media[d.needsMedia]).flatMap(d => d.replaces || []))
-    SLIDES = window.DeckOrder.orderSlides(ALL, deck)
-      .filter(x => !hidden.has(x.key) && (!sel || sel.has(x.def.chapter)) && (!x.def.needsMedia || media[x.def.needsMedia]) && !replaced.has(x.key))
-      .map(x => x.def)
-    if (!SLIDES.length) SLIDES = ALL
+    const ordered = window.DeckOrder.orderSlides(ALL, deck)
+    slideEntries = ordered.filter(x => !hidden.has(x.key) && (!sel || sel.has(x.def.chapter)) && (!x.def.needsMedia || media[x.def.needsMedia]) && !replaced.has(x.key))
+    if (!slideEntries.length) slideEntries = ordered
+    if (PREVIEW_KEY) slideEntries = ordered.filter(x => x.key === PREVIEW_KEY)
+    SLIDES = slideEntries.map(x => x.def)
+    if (!SLIDES.length) throw new Error('This slide is unavailable')
     stage.innerHTML = ''
     els = SLIDES.map((def, i) => {
       const s = document.createElement('section')
@@ -115,7 +120,7 @@
     clearTimeout(controlsTimer)
     document.body.classList.remove('controls-idle')
     if (fullscreenElement()) controlsTimer = setTimeout(() => {
-      if (document.getElementById('settings').hidden && document.getElementById('qr-overlay').hidden) document.body.classList.add('controls-idle')
+      if (document.getElementById('settings').hidden && document.getElementById('qr-overlay').hidden && document.getElementById('slide-jump').hidden) document.body.classList.add('controls-idle')
     }, 2400)
   }
   function syncFullscreen () {
@@ -184,7 +189,8 @@
     applyStep(idx, step)
     history.replaceState(null, '', location.search + '#' + (idx + 1) + (step ? '.' + step : ''))
     const ch = (window.CHAPTERS || []).find(c => c.id === SLIDES[idx].chapter)
-    document.getElementById('nav-count').textContent = `${idx + 1} / ${SLIDES.length}` + (ch ? ` · ${ch.title}` : '')
+    document.getElementById('nav-count').textContent = `${idx + 1} / ${SLIDES.length}` + (ch ? ` · ${ch.title}` : '') + ' ▾'
+    document.getElementById('jump-number').value = idx + 1
     document.querySelector('#progress i').style.width = ((idx + 1) / SLIDES.length * 100) + '%'
   }
   function next () {
@@ -196,6 +202,55 @@
     if (step > 0) show(idx, step - 1)
     else if (idx > 0) show(idx - 1, SLIDES[idx - 1].steps || 0)
   }
+
+  // ---------- slide chooser ----------
+  const jump = document.getElementById('slide-jump')
+  const jumpNumber = document.getElementById('jump-number')
+  const jumpSelect = document.getElementById('jump-select')
+  const jumpFrame = document.getElementById('jump-preview')
+  const jumpButton = document.getElementById('nav-count')
+  function previewJump (i) {
+    const entry = slideEntries[i]
+    if (!entry) return
+    jumpNumber.value = i + 1
+    jumpSelect.value = String(i)
+    jumpFrame.src = window.SlidePreview.url(entry.key, deck.sessionId)
+  }
+  function closeJump () {
+    jump.hidden = true
+    jumpButton.setAttribute('aria-expanded', 'false')
+    jumpFrame.src = 'about:blank'
+    revealControls()
+    jumpButton.focus()
+  }
+  function openJump () {
+    jumpSelect.innerHTML = slideEntries.map((entry, i) => `<option value="${i}">${i + 1}. ${esc(window.Live.slideTitle(entry.def))}</option>`).join('')
+    jumpNumber.max = SLIDES.length
+    jump.hidden = false
+    jumpButton.setAttribute('aria-expanded', 'true')
+    revealControls()
+    previewJump(idx)
+    jumpNumber.focus()
+    jumpNumber.select()
+  }
+  function jumpToNumber () {
+    const number = jumpNumber.valueAsNumber
+    if (!Number.isInteger(number) || number < 1 || number > SLIDES.length) { jumpNumber.reportValidity(); return }
+    closeJump()
+    show(number - 1, 0)
+  }
+  jumpButton.onclick = () => jump.hidden ? openJump() : closeJump()
+  document.getElementById('jump-close').onclick = closeJump
+  jumpSelect.onchange = () => previewJump(Number(jumpSelect.value))
+  jumpNumber.oninput = () => {
+    const i = jumpNumber.valueAsNumber - 1
+    if (Number.isInteger(i) && i >= 0 && i < SLIDES.length) previewJump(i)
+  }
+  document.getElementById('jump-form').onsubmit = e => { e.preventDefault(); jumpToNumber() }
+  document.getElementById('jump-present').onclick = jumpToNumber
+  document.addEventListener('pointerdown', e => {
+    if (!jump.hidden && !jump.contains(e.target) && !jumpButton.contains(e.target)) closeJump()
+  })
 
   // ---------- widgets lifecycle ----------
   const timers = []
@@ -253,7 +308,7 @@
     document.getElementById('hud-players').textContent = players
     document.getElementById('qr-players').textContent = players
   }
-  setInterval(refreshPlayers, 3000)
+  if (!PREVIEW_KEY) setInterval(refreshPlayers, 3000)
 
   function mountJoin (el) {
     every(2000, async () => {
@@ -476,7 +531,9 @@
 
   // ---------- keyboard ----------
   document.addEventListener('keydown', e => {
-    if (e.target.closest('input, textarea')) { if (e.key === 'Escape') settings.hidden = true; return }
+    if (PREVIEW_KEY) return
+    if (!jump.hidden) { if (e.key === 'Escape') { e.preventDefault(); closeJump() }; return }
+    if (e.target.closest('input, textarea, select')) { if (e.key === 'Escape') settings.hidden = true; return }
     if (!settings.hidden) { if (e.key === 'Escape') settings.hidden = true; return }
     const k = e.key
     if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); next() }
@@ -543,9 +600,21 @@
     build()
     await checkAuth()
     if (PRINT) return printDeck()
+    if (PREVIEW_KEY) {
+      document.body.classList.add('single-preview')
+      const el = els[0]
+      const def = SLIDES[0]
+      el.classList.add('active')
+      document.documentElement.style.setProperty('--presentation-bg', getComputedStyle(el).backgroundColor)
+      if (def.onEnter) { try { def.onEnter(el) } catch (_) {} }
+      for (let st = 0; st <= (def.steps || 0); st++) applyStep(0, st)
+      el.querySelectorAll('.live[data-q]').forEach(w => pollLive(w))
+      return
+    }
     drawAllQr()
     refreshPlayers()
-    const [i, s] = fromHash()
+    let [i, s] = fromHash()
+    if (START_KEY) { const target = slideEntries.findIndex(x => x.key === START_KEY); if (target >= 0) { i = target; s = 0 } }
     idx = i
     els[i].classList.add('active')
     enter(i)
