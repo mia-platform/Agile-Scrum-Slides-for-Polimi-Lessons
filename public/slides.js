@@ -274,40 +274,40 @@
       entries.map(b => voyageCraft(b[0], b[1], b[2], b[3])).join('') +
       '</svg>';
   }
-  const vfRow = (period, heading, sub, strip, takeaway, n) => \`
-    <div data-step="\${n}" style="display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center">
+  const vfRow = (period, heading, sub, strip, takeaway, n) => `
+    <div data-step="${n}" style="display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center">
       <div>
-        <div style="font-family:var(--display);font-size:55px;font-weight:800;line-height:1">\${period}</div>
-        <div style="font-size:22px;font-weight:700;margin-top:3px">\${heading}</div>
-        <div class="small" style="font-size:17px;line-height:1.2;margin-top:6px">\${sub}</div>
+        <div style="font-family:var(--display);font-size:55px;font-weight:800;line-height:1">${period}</div>
+        <div style="font-size:22px;font-weight:700;margin-top:3px">${heading}</div>
+        <div class="small" style="font-size:17px;line-height:1.2;margin-top:6px">${sub}</div>
       </div>
       <div style="border:2px solid #c6dce4;background:#fff;border-radius:18px;padding:4px 20px 10px;min-width:0">
-        \${strip}
+        ${strip}
         <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:-6px;font-size:18px">
-          \${takeaway}
+          ${takeaway}
         </div>
       </div>
-    </div>\`;
+    </div>`;
   add({
     steps: 3,
-    html: \`
+    html: `
       <h2 style="margin-bottom:18px">AI enables faster validation of business ideas</h2>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <span style="font-size:23px;color:var(--mist)">The goal is always the same: <strong style="color:var(--deep)">reach the island</strong> and learn what users need.</span>
         <span style="font-size:19px;color:var(--mist)">● Experiment &nbsp; <span style="color:#248c70">✓ Validated</span> &nbsp; <span style="color:#cc6659">× Discarded</span></span>
       </div>
       <div style="display:grid;gap:13px;flex:1;align-content:center">
-        \${vfRow('’90s','Waterfall','One big delivery',
+        ${vfRow('’90s','Waterfall','One big delivery',
           voyageStrip([['idea',125,'pending','Plan'],['hull',365,'pending','Build'],['sail',605,'pending','Integrate'],['motor',855,'ok','Launch']]),
           '<span style="color:#5e7387">No user feedback until launch</span><strong style="color:var(--deep)">Engineered only at the end →</strong>',1)}
-        \${vfRow('’10s','Agile','Incremental delivery',
+        ${vfRow('’10s','Agile','Incremental delivery',
           voyageStrip([['raft',120,'ok','v1'],['dinghy',360,'ok','v2'],['sail',600,'ok','v3'],['motor',855,'ok','v4']]),
           '<span style="color:#5e7387">Real value and feedback every iteration</span><strong style="color:#248c70">Engineered each time ↻</strong>',2)}
-        \${vfRow('’25s','AI era','Fast experimentation',
+        ${vfRow('’25s','AI era','Fast experimentation',
           voyageStrip([['raft',85,'drop','Discard'],['sub',225,'drop','Discard'],['dinghy',365,'ok','Validate'],['hover',505,'drop','Discard'],['sail',645,'ok','Validate'],['wings',785,'drop','Discard'],['motor',925,'ok','Scale']]),
           '<span style="color:#5e7387">Explore many alternatives; reject weak ideas fast</span><strong style="color:#248c70">Build + validate each time ↻</strong>',3)}
       </div>
-      <p class="small" style="font-size:21px;margin:16px 0 0">AI lowers the cost of each experiment: test more business ideas, discard quickly, and engineer what works.</p>\`
+      <p class="small" style="font-size:21px;margin:16px 0 0">AI lowers the cost of each experiment: test more business ideas, discard quickly, and engineer what works.</p>`
   })
 
   // ---------- 11. SDLC is shorter ----------
@@ -996,4 +996,5 @@
   window.SlideKit = { live, credit, countUp, wavePath, seaScene, speedboat, sailboat, raft, rowboat, fullSpeedboat, person, seated }
 })()
 
+Project: Agile Scrum Polimi Live (project_id agilescrumpolimilive140127277)
 Project: Agile Scrum Polimi Live (project_id agilescrumpolimilive140127277)
