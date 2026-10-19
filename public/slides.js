@@ -279,6 +279,48 @@
         .iv-island svg { display:block; width:125px; height:110px; }
         .iv-island strong { display:block; font-size:18px; color:var(--sea); line-height:1.2; }
         .island-validation .iv-takeaway { font-size:25px; margin:auto 0 0; line-height:1.35; color:var(--deep); }
+        .iv-row { --iv-duration:4.8s; }
+        .iv-row[data-step="2"] { --iv-duration:4.2s; }
+        .iv-row[data-step="3"] { --iv-duration:3.3s; }
+        .iv-route:before { transform-origin:left center; }
+        .island-validation.active .iv-playing .iv-route:before { animation:iv-route-draw var(--iv-duration) cubic-bezier(.22,.61,.36,1) both; }
+        .island-validation.active .iv-playing .iv-attempt { animation:iv-arrive .55s cubic-bezier(.22,1,.36,1) var(--iv-delay) both; }
+        .island-validation.active .iv-playing .iv-attempt svg { animation:iv-launch 1.35s ease-in-out calc(var(--iv-delay) + .28s) both; }
+        .island-validation.active .iv-playing[data-step="1"] .iv-attempt:not(:last-child) svg { animation:iv-assemble .85s ease-out calc(var(--iv-delay) + .18s) both; }
+        .island-validation.active .iv-playing[data-step="2"] .iv-attempt svg > g,
+        .island-validation.active .iv-playing[data-step="3"] .iv-attempt:not(.iv-discard) svg > g,
+        .island-validation.active .iv-playing[data-step="1"] .iv-attempt:last-child svg > g { animation:iv-bob 2.8s ease-in-out calc(var(--iv-delay) + 1.6s) infinite; }
+        .island-validation.active .iv-playing .iv-outcome { animation:iv-decision .45s ease-out calc(var(--iv-delay) + 1s) both; }
+        .island-validation.active .iv-playing .iv-discard svg { animation:iv-reject 1.15s ease-in-out calc(var(--iv-delay) + .25s) both; }
+        .island-validation.active .iv-playing .iv-island { animation:iv-arrive .7s ease-out .1s both; }
+        @keyframes iv-route-draw {
+          from { transform:scaleX(0); opacity:.3; }
+          to { transform:scaleX(1); opacity:1; }
+        }
+        @keyframes iv-arrive {
+          from { opacity:0; transform:translate(-18px,10px); }
+          to { opacity:1; transform:translate(0,0); }
+        }
+        @keyframes iv-assemble {
+          0% { opacity:0; transform:translateY(-12px) scale(.9); }
+          65% { opacity:1; transform:translateY(2px) scale(1.025); }
+          100% { opacity:1; transform:none; }
+        }
+        @keyframes iv-launch {
+          0% { transform:translateX(-16px) rotate(-3deg); }
+          55% { transform:translateX(18px) translateY(-3px) rotate(2deg); }
+          100% { transform:translateX(0) rotate(0); }
+        }
+        @keyframes iv-bob { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+        @keyframes iv-decision { from { opacity:0; transform:translateY(6px) scale(.92); } to { opacity:1; transform:none; } }
+        @keyframes iv-reject {
+          0% { opacity:1; transform:translateX(-12px); }
+          40% { opacity:1; transform:translateX(12px) rotate(-4deg); }
+          65% { opacity:.8; transform:translateX(7px) rotate(4deg); }
+          100% { opacity:.45; transform:translateY(4px); }
+        }
+        @media (prefers-reduced-motion:reduce) { .island-validation.active .iv-playing *,.island-validation.active .iv-playing .iv-route:before { animation:none !important; } }
+        .print-mode .island-validation .iv-playing *,.print-mode .island-validation .iv-playing .iv-route:before { animation:none !important; }
       </style>
       <h2>AI enables faster validation of business ideas</h2>
       <p class="iv-goal">The same user need: get to the island. When can we test a working solution?</p>
@@ -318,6 +360,16 @@
     steps: 3,
     html: `
       <h2>In the AI era, the SDLC is shorter</h2>
+    ,
+    onStep (el, step) {
+      el.querySelectorAll('.iv-row').forEach((row, rowIndex) => {
+        row.querySelectorAll('.iv-attempt').forEach((boat, i) => {
+          // AI tries more options with shorter gaps between launches.
+          boat.style.setProperty('--iv-delay', (i * [1.05, .85, .38][rowIndex]) + 's')
+        })
+        row.classList.toggle('iv-playing', step >= Number(row.dataset.step))
+      })
+    }
       <div class="flow" style="margin-bottom:44px">
         <div class="stage-box agility" data-step="1"><div class="kicker">Agility · BIZ + TECH</div><h3>Design &amp; Experiment</h3>
           <ul><li>Business validation, fast</li><li>Discard what doesn’t work</li></ul></div>
