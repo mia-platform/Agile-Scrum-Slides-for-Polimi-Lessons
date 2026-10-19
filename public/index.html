@@ -29,12 +29,19 @@
 
   <nav id="nav">
     <button id="nav-prev" aria-label="Previous">‹</button>
-    <span id="nav-count">1 / 1</span>
+    <button id="nav-count" type="button" aria-label="Jump to slide" aria-expanded="false" aria-controls="slide-jump">1 / 1 ▾</button>
     <button id="nav-next" aria-label="Next">›</button>
     <button id="nav-fullscreen" aria-label="Enter fullscreen" title="Fullscreen (F)" aria-pressed="false">⛶</button>
     <button id="nav-menu" aria-label="Presenter settings">⚙</button>
   </nav>
   <div id="progress"><i></i></div>
+  <section id="slide-jump" hidden aria-label="Choose a slide">
+    <div class="jump-heading"><b>Jump to slide</b><button type="button" id="jump-close" aria-label="Close slide chooser">×</button></div>
+    <form id="jump-form"><label for="jump-number">Slide number</label><input id="jump-number" type="number" min="1" step="1" required><button type="submit">Go</button></form>
+    <label for="jump-select">Slide title</label><select id="jump-select"></select>
+    <iframe id="jump-preview" title="Selected slide preview"></iframe>
+    <button type="button" id="jump-present">Present selected slide</button>
+  </section>
 
   <div id="qr-overlay" hidden>
     <div class="qr-card">
@@ -87,6 +94,7 @@
   <script>document.write('<script src="' + __asset('scrum-framework.js') + '"><\/script>')</script>
   <script>document.write('<script src="' + __asset('slides-updates.js') + '"><\/script>')</script>
   <script>document.write('<script src="' + __asset('chapters.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slide-preview.js') + '"><\/script>')</script>
   <script>document.write('<script src="' + __asset('deck.js') + '"><\/script>')</script>
 </body>
 </html>
