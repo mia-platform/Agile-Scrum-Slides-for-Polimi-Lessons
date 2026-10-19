@@ -247,7 +247,7 @@
   // ---------- 10. AI era timeline ----------
   // Reuse the lesson's original boat and island artwork in this comparison.
   const validationVessel = (art, name, status, outcome = '', discarded = false) =>
-    `<div class="iv-attempt ${discarded ? 'iv-discard' : ''}">
+    `<div class="iv-attempt ${discarded ? 'iv-discard' : outcome ? 'iv-validated' : ''}">
       <svg viewBox="-42 -244 310 290" aria-hidden="true"><g class="iv-float">${art}</g></svg>
       <strong>${name}</strong><span class="iv-status">${status}</span>
       ${outcome ? `<span class="iv-outcome">${outcome}</span>` : ''}
