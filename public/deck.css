@@ -26,8 +26,13 @@ body.presenter { overflow: hidden; }
 button { font: inherit; color: inherit; }
 
 /* ---------- stage ---------- */
-#viewport { position: fixed; inset: 0; display: grid; place-items: center; overflow: hidden; }
-#stage { position: relative; width: 1600px; height: 900px; transform-origin: center center; flex: none; }
+#viewport { position: fixed; inset: 0; overflow: hidden; background:var(--presentation-bg, var(--deep)); transition:background .45s ease; }
+#stage { position: absolute; left:50%; top:50%; width:1600px; height:900px; transform-origin:top left; }
+body.is-fullscreen.controls-idle { cursor:none; }
+body.is-fullscreen.controls-idle #hud,
+body.is-fullscreen.controls-idle #nav,
+body.is-fullscreen.controls-idle #progress { opacity:0; pointer-events:none; }
+#hud, #progress { transition:opacity .3s ease; }
 
 .slide {
   position: absolute; inset: 0; padding: 72px 96px 96px;
@@ -428,7 +433,7 @@ body.hide-hud #hud { display: none; }
 /* ---------- export to PDF (index.html?print=1) ---------- */
 body.print-mode { overflow: auto; height: auto; background: #5E7387; }
 .print-mode #viewport { position: static; display: block; overflow: visible; }
-.print-mode #stage { transform: none !important; width: 1600px; height: auto; margin: 0 auto; zoom: var(--pz, 1); }
+.print-mode #stage { position:relative; left:auto; top:auto; transform: none !important; width: 1600px; height: auto; margin: 0 auto; zoom: var(--pz, 1); }
 .print-mode .slide { position: relative; inset: auto; opacity: 1 !important; visibility: visible !important; width: 1600px; height: 900px; margin: 0 auto 24px; break-after: page; page-break-after: always; box-shadow: 0 6px 24px rgba(0, 0, 0, .25); }
 .print-mode .slide:last-child { break-after: auto; page-break-after: auto; }
 .print-mode #hud, .print-mode #nav, .print-mode #progress, .print-mode #qr-overlay, .print-mode #settings { display: none !important; }
