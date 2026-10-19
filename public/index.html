@@ -9,7 +9,8 @@
       if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
       document.write('<base href="' + location.origin + p + '">')
       var t = (location.search.match(/[?&]flow_share=([^&#]+)/) || [])[1]
-      window.__asset = function (f) { return t ? f + '?flow_share=' + t : f }
+      var assetVersion = new URLSearchParams(location.search).get('v') || 'polimi-nav-20261019-2'
+      window.__asset = function (f) { return f + '?v=' + encodeURIComponent(assetVersion) + (t ? '&flow_share=' + t : '') }
     })()
   </script>
   <title>Introduction to Agile and Scrum · Polimi 2026</title>
