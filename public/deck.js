@@ -240,6 +240,13 @@
     show(number - 1, 0)
   }
   jumpButton.onclick = () => jump.hidden ? openJump() : closeJump()
+  jumpButton.onkeydown = e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      e.stopPropagation()
+      jump.hidden ? openJump() : closeJump()
+    }
+  }
   document.getElementById('jump-close').onclick = closeJump
   jumpSelect.onchange = () => previewJump(Number(jumpSelect.value))
   jumpNumber.oninput = () => {
