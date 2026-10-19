@@ -248,7 +248,7 @@
   // Reuse the lesson's original boat and island artwork in this comparison.
   const validationVessel = (art, name, status, outcome = '', discarded = false) =>
     `<div class="iv-attempt ${discarded ? 'iv-discard' : ''}">
-      <svg viewBox="-42 -244 310 290" aria-hidden="true">${art}</svg>
+      <svg viewBox="-42 -244 310 290" aria-hidden="true"><g class="iv-float">${art}</g></svg>
       <strong>${name}</strong><span class="iv-status">${status}</span>
       ${outcome ? `<span class="iv-outcome">${outcome}</span>` : ''}
     </div>`
@@ -287,9 +287,9 @@
         .island-validation.active .iv-playing .iv-attempt { animation:iv-arrive .55s cubic-bezier(.22,1,.36,1) var(--iv-delay) both; }
         .island-validation.active .iv-playing .iv-attempt svg { animation:iv-launch 1.35s ease-in-out calc(var(--iv-delay) + .28s) both; }
         .island-validation.active .iv-playing[data-step="1"] .iv-attempt:not(:last-child) svg { animation:iv-assemble .85s ease-out calc(var(--iv-delay) + .18s) both; }
-        .island-validation.active .iv-playing[data-step="2"] .iv-attempt svg > g,
-        .island-validation.active .iv-playing[data-step="3"] .iv-attempt:not(.iv-discard) svg > g,
-        .island-validation.active .iv-playing[data-step="1"] .iv-attempt:last-child svg > g { animation:iv-bob 2.8s ease-in-out calc(var(--iv-delay) + 1.6s) infinite; }
+        .island-validation.active .iv-playing[data-step="2"] .iv-float,
+        .island-validation.active .iv-playing[data-step="3"] .iv-attempt:not(.iv-discard) .iv-float,
+        .island-validation.active .iv-playing[data-step="1"] .iv-attempt:last-child .iv-float { animation:iv-bob 2.8s ease-in-out calc(var(--iv-delay) + 1.6s) infinite; }
         .island-validation.active .iv-playing .iv-outcome { animation:iv-decision .45s ease-out calc(var(--iv-delay) + 1s) both; }
         .island-validation.active .iv-playing .iv-discard svg { animation:iv-reject 1.15s ease-in-out calc(var(--iv-delay) + .25s) both; }
         .island-validation.active .iv-playing .iv-island { animation:iv-arrive .7s ease-out .1s both; }
