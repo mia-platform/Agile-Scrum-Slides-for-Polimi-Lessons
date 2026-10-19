@@ -278,11 +278,11 @@
         .iv-comparison { display:grid; gap:16px; }
         .iv-row { display:grid; grid-template-columns:200px 1fr 130px; gap:22px; align-items:center; min-height:170px; }
         .iv-label { font-family:var(--display); font-size:34px; font-weight:800; }
-        .iv-label small { display:block; font-family:var(--body); font-size:20px; line-height:1.3; font-weight:500; color:var(--mist); margin-top:6px; }
-        .iv-route { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px; position:relative; }
+        .iv-comparison { display:grid; gap:10px; }
+        .iv-route:before { content:''; position:absolute; left:0; right:0; top:72px; border-bottom:3px solid var(--line); }
         .iv-route:before { content:''; position:absolute; left:0; right:0; top:80px; border-bottom:3px solid var(--line); }
         .iv-attempt { position:relative; text-align:center; display:flex; flex-direction:column; align-items:center; }
-        .iv-attempt svg { width:140px; height:88px; display:block; }
+        .iv-attempt svg { width:140px; height:80px; display:block; }
         .iv-attempt strong { font-size:22px; line-height:1.15; margin-top:3px; }
         .iv-status { font-size:18px; color:var(--mist); line-height:1.3; margin-top:3px; white-space:nowrap; }
         .iv-outcome { color:var(--kelp); font-size:20px; font-weight:700; line-height:1.2; margin-top:3px; }
@@ -291,7 +291,10 @@
         .iv-island { text-align:center; align-self:center; }
         .iv-island svg { display:block; width:125px; height:110px; }
         .iv-island strong { display:block; font-size:18px; color:var(--sea); line-height:1.2; }
-        .island-validation .iv-takeaway { font-size:25px; margin:auto 0 0; line-height:1.35; color:var(--deep); }
+        .island-validation .iv-takeaway { font-size:22px; margin:12px 0 0; line-height:1.3; color:var(--deep); }
+        .iv-value { display:block; width:max-content; margin:4px auto 0; padding:2px 7px; background:var(--sand); color:var(--deep); font-size:17px; line-height:1.15; font-weight:800; border-radius:3px; }
+        .island-validation.active .iv-playing .iv-value { animation:iv-value-reveal .65s ease-out calc(var(--iv-delay) + 1.3s) both; }
+        @keyframes iv-value-reveal { 0% { opacity:0; transform:scale(.85); } 65% { opacity:1; transform:scale(1.08); box-shadow:0 0 0 7px #F2C14E33; } 100% { opacity:1; transform:scale(1); box-shadow:0 0 0 0 #F2C14E00; } }
         .iv-row { --iv-duration:4.8s; }
         .iv-row[data-step="2"] { --iv-duration:4.2s; }
         .iv-row[data-step="3"] { --iv-duration:3.3s; }
@@ -356,7 +359,7 @@
         <div class="iv-row" data-step="3">
           <div class="iv-label">AI<small>2026<br>Shorter iterations<br>Test and discard fast</small></div>
           <div class="iv-route">
-            ${validationVessel(raft(), 'Raft', 'Engineered + tested', '✓ Can cross<small style="display:block;font-size:16px;line-height:1.1;margin-top:3px">Business validated</small>')}
+            ${validationVessel(raft(), 'Raft', 'Engineered + tested', '✓ Can cross')}
             ${validationVessel(rowboat(), 'Rowboat', 'Engineered + tested', '✓ Keep')}
             ${validationVessel(validationWindsurf(), 'Windsurf', 'Engineered + tested', '× Discard', true)}
             ${validationVessel(validationScooterboat(), 'Scooterboat', 'Engineered + tested', '× Discard', true)}
