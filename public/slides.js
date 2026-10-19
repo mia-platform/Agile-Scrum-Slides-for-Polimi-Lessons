@@ -250,7 +250,7 @@
     `<div class="iv-attempt ${discarded ? 'iv-discard' : outcome ? 'iv-validated' : ''}">
       <svg viewBox="-42 -244 310 290" aria-hidden="true"><g class="iv-float">${art}</g></svg>
       <strong>${name}</strong><span class="iv-status">${status}</span>
-      ${outcome ? `<span class="iv-outcome">${outcome}</span>` : ''}
+      ${outcome ? `<span class="iv-outcome">${outcome}${!discarded ? '<span class="iv-value">Business value</span>' : ''}</span>` : ''}
     </div>`
   const validationWindsurf = () => `<g>
       <path d="M0,-8 Q95,-20 210,-8 Q190,5 18,5 Z" fill="#F2C14E" stroke="#0B2540" stroke-width="3"/>
