@@ -244,70 +244,20 @@
     }
   })
 
-  // ---------- Business validation journeys: Waterfall vs Agile vs AI ----------
-  function voyageCraft (type, x, result, label) {
-    const body = {
-      idea: '<path d="M-38 -12 L38 -12 L29 7 L-29 7Z" fill="none" stroke="#85a7b9" stroke-width="2.5" stroke-dasharray="6 5"/><path d="M-11 -13 V-40 M-32 -28 H12" stroke="#85a7b9" stroke-width="2" stroke-dasharray="5 4"/>',
-      hull: '<path d="M-40 -10 Q0 -3 40 -10 L28 8 Q0 15 -28 8Z" fill="#c8dbe3" stroke="#567b91" stroke-width="2.5"/><path d="M-35 -10 H35" stroke="#567b91" stroke-width="3"/>',
-      raft: '<path d="M-42 -8 H42" stroke="#a57342" stroke-width="13" stroke-linecap="round"/><path d="M-30 -18 V-4 M-7 -18 V-4 M17 -18 V-4" stroke="#dfb985" stroke-width="3"/>',
-      dinghy: '<path d="M-44 -12 Q0 5 44 -12 L30 8 Q0 20 -30 8Z" fill="#21a6b3" stroke="#0B2540" stroke-width="2.5"/><path d="M-4 -14 L-23 -40" stroke="#98613b" stroke-width="3"/><path d="M-31 -43 L-14 -36" stroke="#98613b" stroke-width="7" stroke-linecap="round"/>',
-      sail: '<path d="M-42 -10 Q0 4 42 -10 L30 8 H-30Z" fill="#1884a6" stroke="#0B2540" stroke-width="2"/><path d="M-3 -14 V-65 L-37 -17Z" fill="#ffcb58" stroke="#0B2540" stroke-width="2"/><path d="M2 -58 V-17 H37Z" fill="#fff7e2" stroke="#0B2540" stroke-width="2"/>',
-      motor: '<path d="M-44 -11 Q0 3 44 -11 L33 9 H-33Z" fill="#117b9b" stroke="#0B2540" stroke-width="2"/><path d="M-21 -13 L-14 -39 H17 L29 -13Z" fill="#b7e2ed" stroke="#0B2540" stroke-width="2"/><path d="M-41 -3 H39" stroke="#ff673f" stroke-width="4"/><path d="M-44 -14 L-49 -29" stroke="#0B2540" stroke-width="6"/>',
-      sub: '<ellipse cx="0" cy="-9" rx="43" ry="17" fill="#f4bc4e" stroke="#0B2540" stroke-width="2.5"/><path d="M-7 -24 V-41 H13 V-24" fill="none" stroke="#0B2540" stroke-width="3"/><circle cx="13" cy="-9" r="7" fill="#bce5f1" stroke="#0B2540" stroke-width="2"/>',
-      hover: '<path d="M-40 -10 L40 -10 L22 8 H-22Z" fill="#e4b9b2" stroke="#0B2540" stroke-width="2"/><path d="M-25 -10 L-25 -38 M25 -10 L25 -38 M-49 -38 H49" stroke="#0B2540" stroke-width="3"/><ellipse cy="-42" rx="35" ry="3" fill="#6cb8c6"/>',
-      wings: '<path d="M-40 -12 Q0 4 40 -12 L27 7 H-27Z" fill="#2287a4" stroke="#0B2540" stroke-width="2"/><path d="M-15 -15 Q-55 -64 -61 -30 L-23 -4 M15 -15 Q55 -64 61 -30 L23 -4" fill="#d2e7eb" stroke="#0B2540" stroke-width="2"/>'
-    };
-    const mark = result === 'drop'
-      ? '<circle cx="0" cy="-79" r="13" fill="#fce1dc" stroke="#cc6659" stroke-width="2"/><path d="M-5 -84 L5 -74 M5 -84 L-5 -74" stroke="#cc6659" stroke-width="3" stroke-linecap="round"/>'
-      : result === 'ok'
-        ? '<circle cx="0" cy="-79" r="13" fill="#ddf3e6" stroke="#248c70" stroke-width="2"/><path d="M-6 -79 L-1 -74 L7 -84" stroke="#248c70" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
-        : '<circle cx="0" cy="-79" r="12" fill="#eaf0f4" stroke="#91a6b5" stroke-width="2"/><circle cx="0" cy="-79" r="3" fill="#91a6b5"/>';
-    return '<g transform="translate(' + x + ',103)" opacity="' + (result === 'drop' ? '.72' : '1') + '">' +
-      body[type] + mark +
-      '<text y="30" text-anchor="middle" font-size="15" font-weight="600" fill="' + (result === 'drop' ? '#bb625b' : '#5e7387') + '">' + label + '</text></g>';
-  }
-  function voyageStrip (entries) {
-    return '<svg viewBox="0 0 1050 150" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:142px" aria-hidden="true">' +
-      '<path d="M12 110 Q120 105 220 110 T420 110 T620 110 T820 110 T1038 110" stroke="#9bd5e3" stroke-width="3" fill="none"/>' +
-      '<path d="M999 109 Q1008 76 1030 72 L1050 109 Z" fill="#a9d9ac"/>' +
-      '<path d="M1025 79 V46 M1025 57 Q1009 43 997 52 M1025 57 Q1040 39 1049 47" stroke="#30986c" stroke-width="4" fill="none" stroke-linecap="round"/>' +
-      entries.map(b => voyageCraft(b[0], b[1], b[2], b[3])).join('') +
-      '</svg>';
-  }
-  const vfRow = (period, heading, sub, strip, takeaway, n) => `
-    <div data-step="${n}" style="display:grid;grid-template-columns:165px 1fr;gap:20px;align-items:center">
-      <div>
-        <div style="font-family:var(--display);font-size:55px;font-weight:800;line-height:1">${period}</div>
-        <div style="font-size:22px;font-weight:700;margin-top:3px">${heading}</div>
-        <div class="small" style="font-size:17px;line-height:1.2;margin-top:6px">${sub}</div>
-      </div>
-      <div style="border:2px solid #c6dce4;background:#fff;border-radius:18px;padding:4px 20px 10px;min-width:0">
-        ${strip}
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:-6px;font-size:18px">
-          ${takeaway}
-        </div>
-      </div>
-    </div>`;
+  // ---------- 10. AI era timeline ----------
   add({
     steps: 3,
     html: `
-      <h2 style="margin-bottom:18px">AI enables faster validation of business ideas</h2>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:23px;color:var(--mist)">The goal is always the same: <strong style="color:var(--deep)">reach the island</strong> and learn what users need.</span>
-        <span style="font-size:19px;color:var(--mist)">● Experiment &nbsp; <span style="color:#248c70">✓ Validated</span> &nbsp; <span style="color:#cc6659">× Discarded</span></span>
+      <h2>AI enables faster validation of business ideas</h2>
+      <div style="margin-top:10px">
+        <div class="era" data-step="1"><div class="yr">’90s<small>Waterfall methodology</small></div>
+          <div class="track"><div class="blk" style="flex:6">Business validation</div><div class="blk eng" style="flex:2">Engineered</div></div></div>
+        <div class="era" data-step="2"><div class="yr">’10s<small>Agile revolution</small></div>
+          <div class="track"><div class="blk" style="flex:2">Business validation</div><div class="blk" style="flex:2">Business validation</div><div class="blk" style="flex:2">Business validation</div><div class="blk eng" style="flex:2">Engineered</div></div></div>
+        <div class="era" data-step="3"><div class="yr">’25s<small>AI era</small></div>
+          <div class="track"><div class="blk disc" style="flex:1">Discarded</div><div class="blk" style="flex:1">Validated</div><div class="blk disc" style="flex:1">Discarded</div><div class="blk" style="flex:1">Validated</div><div class="blk disc" style="flex:1">Discarded</div><div class="blk" style="flex:1">Validated</div><div class="blk eng" style="flex:2">Engineered</div></div></div>
       </div>
-      <div style="display:grid;gap:13px;flex:1;align-content:center">
-        ${vfRow('’90s','Waterfall','One big delivery',
-          voyageStrip([['idea',125,'pending','Plan'],['hull',365,'pending','Build'],['sail',605,'pending','Integrate'],['motor',855,'ok','Launch']]),
-          '<span style="color:#5e7387">No user feedback until launch</span><strong style="color:var(--deep)">Engineered only at the end →</strong>',1)}
-        ${vfRow('’10s','Agile','Incremental delivery',
-          voyageStrip([['raft',120,'ok','v1'],['dinghy',360,'ok','v2'],['sail',600,'ok','v3'],['motor',855,'ok','v4']]),
-          '<span style="color:#5e7387">Real value and feedback every iteration</span><strong style="color:#248c70">Engineered each time ↻</strong>',2)}
-        ${vfRow('’25s','AI era','Fast experimentation',
-          voyageStrip([['raft',85,'drop','Discard'],['sub',225,'drop','Discard'],['dinghy',365,'ok','Validate'],['hover',505,'drop','Discard'],['sail',645,'ok','Validate'],['wings',785,'drop','Discard'],['motor',925,'ok','Scale']]),
-          '<span style="color:#5e7387">Explore many alternatives; reject weak ideas fast</span><strong style="color:#248c70">Build + validate each time ↻</strong>',3)}
-      </div>
-      <p class="small" style="font-size:21px;margin:16px 0 0">AI lowers the cost of each experiment: test more business ideas, discard quickly, and engineer what works.</p>`
+      <p class="small" style="margin-top:auto">Each block is one round of business validation: the shorter the round, the more ideas we can test before engineering the right one.</p>`
   })
 
   // ---------- 11. SDLC is shorter ----------
@@ -995,6 +945,3 @@
   window.SLIDES = S
   window.SlideKit = { live, credit, countUp, wavePath, seaScene, speedboat, sailboat, raft, rowboat, fullSpeedboat, person, seated }
 })()
-
-Project: Agile Scrum Polimi Live (project_id agilescrumpolimilive140127277)
-Project: Agile Scrum Polimi Live (project_id agilescrumpolimilive140127277)
