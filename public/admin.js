@@ -176,6 +176,7 @@
     const c = d.config
     const sp = c.speaker || {}
     $('e-session').value = s.id
+    $('e-preview').href = withShare(baseHref() + 'index.html?session=' + s.id)
     $('e-status').textContent = s.status
     $('e-pdf').href = withShare(baseHref() + 'index.html?print=1&session=' + s.id)
     $('e-status').className = 'status ' + s.status
@@ -233,13 +234,27 @@
       if (!items.length) return ''
       return `<div class="sl-group" data-ch="${ch.id}"><h4>${esc(ch.title)}</h4>${items.map(({ def, key }) => {
         const title = slideTitle(def) + (def.needsMedia ? ' (shown once its image is uploaded)' : '')
-        return `<div class="sl-row ${hidden.has(key) ? 'off' : ''}" draggable="true" data-key="${esc(key)}" ${def.needsMedia ? 'data-media="1"' : ''}><span class="grip" aria-hidden="true">⠿</span><label><input type="checkbox" data-key="${esc(key)}" ${hidden.has(key) ? '' : 'checked'}><span class="n"></span>${esc(title)}</label>${moveButtons(slideTitle(def))}</div>`
+        return `<div class="sl-row ${hidden.has(key) ? 'off' : ''}" draggable="true" data-key="${esc(key)}" ${def.needsMedia ? 'data-media="1"' : ''}><span class="grip" aria-hidden="true">⠿</span><label><input type="checkbox" data-key="${esc(key)}" ${hidden.has(key) ? '' : 'checked'}><span class="n"></span>${esc(title)}</label><button type="button" class="btn ghost small sl-preview" data-preview="${esc(key)}" aria-label="Preview ${esc(slideTitle(def))}">Preview</button>${moveButtons(slideTitle(def))}</div>`
       }).join('')}</div>`
     }).join('')
     $('e-slides').querySelectorAll('input').forEach(cb => { cb.onchange = () => { cb.closest('.sl-row').classList.toggle('off', !cb.checked); syncChapters() } })
     $('e-chapters').querySelectorAll('input').forEach(cb => { cb.onchange = syncChapters })
     syncChapters()
   }
+  $('e-slides').addEventListener('click', e => {
+    const button = e.target.closest('[data-preview]')
+    if (!button) return
+    const row = button.closest('.sl-row')
+    const entry = DO.orderSlides(SLIDES, editing.config).find(x => x.key === button.dataset.preview)
+    if (!entry) return
+    const number = row.querySelector('.n').textContent
+    window.SlidePreview.open({
+      key:entry.key,
+      session:editing.session.id,
+      title:(number !== '–' ? 'Slide ' + number + ': ' : '') + slideTitle(entry.def),
+      included:number !== '–'
+    })
+  })
   function syncGroups () {
     const box = $('e-slides')
     $('e-chapters').querySelectorAll('.chap').forEach(c => {
