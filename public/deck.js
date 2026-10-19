@@ -97,11 +97,58 @@
   }
 
   function fit () {
-    const k = Math.min(window.innerWidth / 1600, window.innerHeight / 900)
-    stage.style.transform = `scale(${k})`
+    if (PRINT) return
+    const viewport = document.getElementById('viewport')
+    const k = Math.min(viewport.clientWidth / 1600, viewport.clientHeight / 900)
+    stage.style.transform = `scale(${k}) translate(-50%, -50%)`
   }
   window.addEventListener('resize', fit)
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fit)
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(document.getElementById('viewport'))
   fit()
+
+  // Fullscreen must start from a click or keyboard gesture.
+  const fullscreenButton = document.getElementById('nav-fullscreen')
+  const fullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement
+  let controlsTimer
+  function revealControls () {
+    clearTimeout(controlsTimer)
+    document.body.classList.remove('controls-idle')
+    if (fullscreenElement()) controlsTimer = setTimeout(() => {
+      if (document.getElementById('settings').hidden && document.getElementById('qr-overlay').hidden) document.body.classList.add('controls-idle')
+    }, 2400)
+  }
+  function syncFullscreen () {
+    const active = !!fullscreenElement()
+    document.body.classList.toggle('is-fullscreen', active)
+    fullscreenButton.setAttribute('aria-label', active ? 'Exit fullscreen' : 'Enter fullscreen')
+    fullscreenButton.setAttribute('aria-pressed', String(active))
+    fullscreenButton.title = active ? 'Exit fullscreen (F or Esc)' : 'Fullscreen (F)'
+    revealControls()
+    fit()
+  }
+  async function toggleFullscreen () {
+    try {
+      if (fullscreenElement()) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen
+        await exit.call(document)
+      } else {
+        const root = document.documentElement
+        const request = root.requestFullscreen || root.webkitRequestFullscreen
+        if (!request) throw new Error('Fullscreen unavailable')
+        await request.call(root)
+      }
+    } catch (_) {
+      alert('Fullscreen is unavailable in this embedded preview. Open the presentation in a browser window, then click Fullscreen or press F.')
+    }
+  }
+  fullscreenButton.onclick = toggleFullscreen
+  document.addEventListener('fullscreenchange', syncFullscreen)
+  document.addEventListener('webkitfullscreenchange', syncFullscreen)
+  document.addEventListener('pointermove', revealControls, { passive:true })
+  document.addEventListener('pointerdown', revealControls, { passive:true })
+  document.addEventListener('keydown', revealControls)
+  syncFullscreen()
 
   // ---------- navigation ----------
   let idx = 0
@@ -133,6 +180,7 @@
       enter(idx)
     }
     step = st
+    document.documentElement.style.setProperty('--presentation-bg', getComputedStyle(els[idx]).backgroundColor)
     applyStep(idx, step)
     history.replaceState(null, '', location.search + '#' + (idx + 1) + (step ? '.' + step : ''))
     const ch = (window.CHAPTERS || []).find(c => c.id === SLIDES[idx].chapter)
@@ -435,7 +483,7 @@
     else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); prev() }
     else if (k === 'Home') show(0, 0)
     else if (k === 'End') show(SLIDES.length - 1, 0)
-    else if (k === 'f' || k === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) }
+    else if (k === 'f' || k === 'F') { e.preventDefault(); toggleFullscreen() }
     else if (k === 'q' || k === 'Q') toggleQr()
     else if (k === 'Escape') overlay.hidden = true
     else if (k === ',') openSettings()
