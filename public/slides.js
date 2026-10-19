@@ -252,6 +252,19 @@
       <strong>${name}</strong><span class="iv-status">${status}</span>
       ${outcome ? `<span class="iv-outcome">${outcome}</span>` : ''}
     </div>`
+  const validationWindsurf = () => `<g>
+      <path d="M0,-8 Q95,-20 210,-8 Q190,5 18,5 Z" fill="#F2C14E" stroke="#0B2540" stroke-width="3"/>
+      <path d="M115,-12 L96,-220 L198,-44 Z" fill="#FFE2D9" stroke="#FF5A36" stroke-width="4"/>
+      <path d="M98,-196 L175,-52 L111,-34 Z" fill="#FFFFFF" opacity=".8"/>
+      <path d="M115,-12 L96,-220" stroke="#0B2540" stroke-width="5"/>
+      ${person(61, -10)}
+      <path d="M75,-35 L111,-80" stroke="#0B2540" stroke-width="6" stroke-linecap="round"/>
+    </g>`
+  const validationScooterboat = () => `<g>
+      ${speedboat().replace('boat-part p-paint"', 'boat-part p-paint on"').replace('boat-part p-engine"', 'boat-part p-engine on"')}
+      ${person(90, -46)}
+      <path d="M130,-46 L141,-133 M122,-133 L162,-133 M106,-74 L141,-133" stroke="#0B2540" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>`
   const validationIsland = () => `<div class="iv-island">${seaScene('', { shorePerson: false }).replace('viewBox="0 0 1400 470"', 'viewBox="1080 100 320 280"')}<strong>Reach the island</strong></div>`
   const validationParts = name => speedboat().replace(/boat-part p-(paint|engine|wheel)"/g,
     (match, part) => `boat-part p-${part}${name.includes(part) ? ' on' : ''}"`)
