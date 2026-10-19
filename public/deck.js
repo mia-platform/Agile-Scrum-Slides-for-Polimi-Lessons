@@ -533,6 +533,7 @@
   document.addEventListener('keydown', e => {
     if (PREVIEW_KEY) return
     if (!jump.hidden) { if (e.key === 'Escape') { e.preventDefault(); closeJump() }; return }
+    if (e.target.closest('button, a') && (e.key === 'Enter' || e.key === ' ')) return
     if (e.target.closest('input, textarea, select')) { if (e.key === 'Escape') settings.hidden = true; return }
     if (!settings.hidden) { if (e.key === 'Escape') settings.hidden = true; return }
     const k = e.key
