@@ -172,15 +172,15 @@
   {
     "id": "q-loc-hour",
     "type": "poll",
-    "prompt": "Your guess: in one hour, how many lines of working code does a developer write, and how many does Claude Opus 5.5?",
+    "prompt": "At Anthropic, how much did code merged per engineer per day increase from 2024 to Q2 2026?",
     "options": [
-      "About 50 vs 500",
-      "About 50 vs 5,000",
-      "About 50 vs 50,000",
-      "About the same"
+      "2× as much",
+      "4× as much",
+      "8× as much",
+      "20× as much"
     ],
     "points": 100
-  },
+  }
   {
     "id": "q-bottleneck",
     "type": "quiz",
