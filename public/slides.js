@@ -245,19 +245,72 @@
   })
 
   // ---------- 10. AI era timeline ----------
+  // Reuse the lesson's original boat and island artwork in this comparison.
+  const validationVessel = (art, name, status, outcome = '', discarded = false) =>
+    `<div class="iv-attempt ${discarded ? 'iv-discard' : ''}">
+      <svg viewBox="-42 -244 310 290" aria-hidden="true">${art}</svg>
+      <strong>${name}</strong><span class="iv-status">${status}</span>
+      ${outcome ? `<span class="iv-outcome">${outcome}</span>` : ''}
+    </div>`
+  const validationIsland = () => `<div class="iv-island">${seaScene('', { shorePerson: false }).replace('viewBox="0 0 1400 470"', 'viewBox="1080 100 320 280"')}<strong>Reach the island</strong></div>`
+  const validationParts = name => speedboat().replace(/boat-part p-(paint|engine|wheel)"/g,
+    (match, part) => `boat-part p-${part}${name.includes(part) ? ' on' : ''}"`)
   add({
+    cls: 'island-validation',
     steps: 3,
     html: `
+      <style>
+        .island-validation h2 { font-size:54px; margin-bottom:16px; max-width:none; }
+        .island-validation .iv-goal { font-size:25px; margin:0 0 20px; color:var(--mist); }
+        .iv-comparison { display:grid; gap:16px; }
+        .iv-row { display:grid; grid-template-columns:200px 1fr 130px; gap:22px; align-items:center; min-height:170px; }
+        .iv-label { font-family:var(--display); font-size:34px; font-weight:800; }
+        .iv-label small { display:block; font-family:var(--body); font-size:20px; line-height:1.3; font-weight:500; color:var(--mist); margin-top:6px; }
+        .iv-route { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px; position:relative; }
+        .iv-route:before { content:''; position:absolute; left:0; right:0; top:92px; border-bottom:3px solid var(--line); }
+        .iv-attempt { position:relative; text-align:center; display:flex; flex-direction:column; align-items:center; }
+        .iv-attempt svg { width:140px; height:100px; display:block; }
+        .iv-attempt strong { font-size:22px; margin-top:3px; }
+        .iv-status { font-size:18px; color:var(--mist); line-height:1.3; margin-top:3px; white-space:nowrap; }
+        .iv-outcome { color:var(--kelp); font-size:20px; font-weight:700; line-height:1.2; margin-top:3px; }
+        .iv-discard svg { opacity:.45; }
+        .iv-discard .iv-outcome { color:#BD3A20; }
+        .iv-island { text-align:center; align-self:center; }
+        .iv-island svg { display:block; width:125px; height:110px; }
+        .iv-island strong { display:block; font-size:18px; color:var(--sea); line-height:1.2; }
+        .island-validation .iv-takeaway { font-size:25px; margin:auto 0 0; line-height:1.35; color:var(--deep); }
+      </style>
       <h2>AI enables faster validation of business ideas</h2>
-      <div style="margin-top:10px">
-        <div class="era" data-step="1"><div class="yr">’90s<small>Waterfall methodology</small></div>
-          <div class="track"><div class="blk" style="flex:6">Business validation</div><div class="blk eng" style="flex:2">Engineered</div></div></div>
-        <div class="era" data-step="2"><div class="yr">’10s<small>Agile revolution</small></div>
-          <div class="track"><div class="blk" style="flex:2">Business validation</div><div class="blk" style="flex:2">Business validation</div><div class="blk" style="flex:2">Business validation</div><div class="blk eng" style="flex:2">Engineered</div></div></div>
-        <div class="era" data-step="3"><div class="yr">’25s<small>AI era</small></div>
-          <div class="track"><div class="blk disc" style="flex:1">Discarded</div><div class="blk" style="flex:1">Validated</div><div class="blk disc" style="flex:1">Discarded</div><div class="blk" style="flex:1">Validated</div><div class="blk disc" style="flex:1">Discarded</div><div class="blk" style="flex:1">Validated</div><div class="blk eng" style="flex:2">Engineered</div></div></div>
+      <p class="iv-goal">The same user need: get to the island. When can we test a working solution?</p>
+      <div class="iv-comparison">
+        <div class="iv-row" data-step="1">
+          <div class="iv-label">Waterfall<small>’90s<br>Working product at the end</small></div>
+          <div class="iv-route">
+            ${validationVessel(validationParts(''), 'Hull', 'Not usable yet')}
+            ${validationVessel(validationParts('paint'), 'Painted hull', 'Not usable yet')}
+            ${validationVessel(validationParts('paint engine'), 'Add engine', 'Not usable yet')}
+            ${validationVessel(fullSpeedboat(), 'Speedboat', 'Engineered + tested', '✓ First crossing')}
+          </div>${validationIsland()}
+        </div>
+        <div class="iv-row" data-step="2">
+          <div class="iv-label">Agile<small>’10s<br>Working product each iteration</small></div>
+          <div class="iv-route">
+            ${VEH.map(v => validationVessel(v.draw(), v.name === 'raft' ? 'Raft' : v.name === 'rowing boat' ? 'Rowboat' : v.name === 'sail boat' ? 'Sailboat' : 'Speedboat', 'Engineered + tested', '✓ Can cross')).join('')}
+          </div>${validationIsland()}
+        </div>
+        <div class="iv-row" data-step="3">
+          <div class="iv-label">AI<small>2025+<br>Shorter iterations<br>Test and discard fast</small></div>
+          <div class="iv-route">
+            ${validationVessel(raft(), 'Raft', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(rowboat(), 'Rowboat', 'Engineered + tested', '✓ Keep')}
+            ${validationVessel(sailboat(), 'Sailboat', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(fullSpeedboat(), 'Speedboat', 'Engineered + tested', '✓ Keep')}
+            ${validationVessel(sailboat(), 'Alternative', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(fullSpeedboat(), 'Better fit', 'Engineered + tested', '✓ Keep')}
+          </div>${validationIsland()}
+        </div>
       </div>
-      <p class="small" style="margin-top:auto">Each block is one round of business validation: the shorter the round, the more ideas we can test before engineering the right one.</p>`
+      <p class="iv-takeaway" data-step="3">Agile delivers a usable solution each iteration. AI makes each cycle faster, so we can test more options and discard poor fits sooner.</p>${AR}`
   })
 
   // ---------- 11. SDLC is shorter ----------
