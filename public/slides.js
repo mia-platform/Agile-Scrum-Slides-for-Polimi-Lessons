@@ -354,14 +354,14 @@
           </div>${validationIsland()}
         </div>
         <div class="iv-row" data-step="3">
-          <div class="iv-label">AI<small>2025+<br>Shorter iterations<br>Test and discard fast</small></div>
+          <div class="iv-label">AI<small>2026<br>Shorter iterations<br>Test and discard fast</small></div>
           <div class="iv-route">
-            ${validationVessel(raft(), 'Raft', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(raft(), 'Raft', 'Engineered + tested', '✓ Can cross<small style="display:block;font-size:16px;line-height:1.1;margin-top:3px">Business validated</small>')}
             ${validationVessel(rowboat(), 'Rowboat', 'Engineered + tested', '✓ Keep')}
-            ${validationVessel(sailboat(), 'Sailboat', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(validationWindsurf(), 'Windsurf', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(validationScooterboat(), 'Scooterboat', 'Engineered + tested', '× Discard', true)}
+            ${validationVessel(sailboat(), 'Sailboat', 'Engineered + tested', '✓ Keep')}
             ${validationVessel(fullSpeedboat(), 'Speedboat', 'Engineered + tested', '✓ Keep')}
-            ${validationVessel(sailboat(), 'Alternative', 'Engineered + tested', '× Discard', true)}
-            ${validationVessel(fullSpeedboat(), 'Better fit', 'Engineered + tested', '✓ Keep')}
           </div>${validationIsland()}
         </div>
       </div>
