@@ -3,6 +3,7 @@
   const { baseHref, withShare } = window.Live
   function url (key, session, preview = true) {
     const u = new URL(withShare(baseHref() + 'index.html'))
+    u.searchParams.set('v',new URLSearchParams(location.search).get('v') || 'polimi-nav-20261019-2')
     u.searchParams.set(preview ? 'preview' : 'slide', key)
     if (session) u.searchParams.set('session', session)
     return u.href
