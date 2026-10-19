@@ -352,15 +352,7 @@
           </div>${validationIsland()}
         </div>
       </div>
-      <p class="iv-takeaway" data-step="3">Agile engineers every iteration. AI shortens the cycle, so we can test more ideas and discard poor fits sooner.</p>${AR}`
-  })
-
-  // ---------- 11. SDLC is shorter ----------
-  add({
-    steps: 3,
-    html: `
-      <h2>In the AI era, the SDLC is shorter</h2>
-    ,
+      <p class="iv-takeaway" data-step="3">Agile engineers every iteration. AI shortens the cycle, so we can test more ideas and discard poor fits sooner.</p>${AR}`,
     onStep (el, step) {
       el.querySelectorAll('.iv-row').forEach((row, rowIndex) => {
         row.querySelectorAll('.iv-attempt').forEach((boat, i) => {
@@ -370,6 +362,13 @@
         row.classList.toggle('iv-playing', step >= Number(row.dataset.step))
       })
     }
+  })
+
+  // ---------- 11. SDLC is shorter ----------
+  add({
+    steps: 3,
+    html: `
+      <h2>In the AI era, the SDLC is shorter</h2>
       <div class="flow" style="margin-bottom:44px">
         <div class="stage-box agility" data-step="1"><div class="kicker">Agility · BIZ + TECH</div><h3>Design &amp; Experiment</h3>
           <ul><li>Business validation, fast</li><li>Discard what doesn’t work</li></ul></div>
