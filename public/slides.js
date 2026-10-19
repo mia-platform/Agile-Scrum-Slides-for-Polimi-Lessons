@@ -275,12 +275,12 @@
       <style>
         .island-validation h2 { font-size:54px; margin-bottom:16px; max-width:none; }
         .island-validation .iv-goal { font-size:25px; margin:0 0 20px; color:var(--mist); }
-        .iv-comparison { display:grid; gap:16px; }
+        .iv-comparison { display:grid; gap:10px; }
         .iv-row { display:grid; grid-template-columns:200px 1fr 130px; gap:22px; align-items:center; min-height:170px; }
         .iv-label { font-family:var(--display); font-size:34px; font-weight:800; }
-        .iv-comparison { display:grid; gap:10px; }
+        .iv-label small { display:block; font-family:var(--body); font-size:20px; line-height:1.3; font-weight:500; color:var(--mist); margin-top:6px; }
+        .iv-route { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px; position:relative; }
         .iv-route:before { content:''; position:absolute; left:0; right:0; top:72px; border-bottom:3px solid var(--line); }
-        .iv-route:before { content:''; position:absolute; left:0; right:0; top:80px; border-bottom:3px solid var(--line); }
         .iv-attempt { position:relative; text-align:center; display:flex; flex-direction:column; align-items:center; }
         .iv-attempt svg { width:140px; height:80px; display:block; }
         .iv-attempt strong { font-size:22px; line-height:1.15; margin-top:3px; }
