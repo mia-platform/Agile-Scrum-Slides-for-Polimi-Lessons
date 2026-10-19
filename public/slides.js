@@ -267,10 +267,10 @@
         .iv-label { font-family:var(--display); font-size:34px; font-weight:800; }
         .iv-label small { display:block; font-family:var(--body); font-size:20px; line-height:1.3; font-weight:500; color:var(--mist); margin-top:6px; }
         .iv-route { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:12px; position:relative; }
-        .iv-route:before { content:''; position:absolute; left:0; right:0; top:92px; border-bottom:3px solid var(--line); }
+        .iv-route:before { content:''; position:absolute; left:0; right:0; top:80px; border-bottom:3px solid var(--line); }
         .iv-attempt { position:relative; text-align:center; display:flex; flex-direction:column; align-items:center; }
-        .iv-attempt svg { width:140px; height:100px; display:block; }
-        .iv-attempt strong { font-size:22px; margin-top:3px; }
+        .iv-attempt svg { width:140px; height:88px; display:block; }
+        .iv-attempt strong { font-size:22px; line-height:1.15; margin-top:3px; }
         .iv-status { font-size:18px; color:var(--mist); line-height:1.3; margin-top:3px; white-space:nowrap; }
         .iv-outcome { color:var(--kelp); font-size:20px; font-weight:700; line-height:1.2; margin-top:3px; }
         .iv-discard svg { opacity:.45; }
@@ -310,7 +310,7 @@
           </div>${validationIsland()}
         </div>
       </div>
-      <p class="iv-takeaway" data-step="3">Agile delivers a usable solution each iteration. AI makes each cycle faster, so we can test more options and discard poor fits sooner.</p>${AR}`
+      <p class="iv-takeaway" data-step="3">Agile engineers every iteration. AI shortens the cycle, so we can test more ideas and discard poor fits sooner.</p>${AR}`
   })
 
   // ---------- 11. SDLC is shorter ----------
