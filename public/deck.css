@@ -470,3 +470,9 @@ body.print-mode .slide .up-anim { animation-delay: -2.5s !important; animation-p
 body.single-preview #hud, body.single-preview #nav, body.single-preview #progress, body.single-preview #settings, body.single-preview #qr-overlay, body.single-preview #slide-jump { display:none !important; }
 body.single-preview .live .bar-row button, body.single-preview .live .msg { display:none !important; }
 .print-mode #slide-jump, .print-mode #single-slide-dialog { display:none !important; }
+@media (max-width:540px) {
+  #nav { left:8px; right:8px; bottom:10px; gap:2px; padding:4px; }
+  #nav button { flex:none; width:36px; height:36px; }
+  #nav #nav-count { flex:1; min-width:0; max-width:none; }
+  #slide-jump { right:8px; bottom:66px; width:calc(100vw - 16px); }
+}
