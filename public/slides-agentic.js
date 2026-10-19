@@ -194,7 +194,7 @@
     onStep (el, step) { el.querySelector('[data-burn]').classList.toggle('go', step >= 1) }
   })
 
-  // lines of code: human vs agent
+  // Anthropic internal comparison: merged code per engineer per day, 2024 vs Q2 2026
   const codeLines = Array.from({ length: 60 }, (_, i) => [
     'export async function handler(req, res) {', '  const cart = await carts.get(req.params.id)', '  if (!cart) return res.status(404).end()',
     '  const total = cart.items.reduce((s, x) => s + x.price * x.qty, 0)', '  await audit.log({ cart: cart.id, total })', '  res.json({ ...cart, total })', '}',
@@ -204,9 +204,9 @@
     html: `<h2>Code is becoming a commodity</h2>
       <div class="cols" style="grid-template-columns:1.55fr 1fr;gap:40px">
         <div class="ag-race">
-          <div class="ag-lane"><div class="who">🧑‍💻 A developer<small>one working day</small></div><div class="bar"><i data-w="1.5"></i></div><div class="num" data-n="50">0</div></div>
-          <div class="ag-lane agent"><div class="who">🤖 A coding agent<small>one working day</small></div><div class="bar"><i data-w="100"></i></div><div class="num" data-n="10000" data-plus="1">0</div></div>
-          <p class="small">Lines of reviewed production code. Orders of magnitude, not a benchmark: classic estimates for a developer range from 10 to 100 lines a day; an agent writes thousands, tests included.</p>
+          <div class="ag-lane"><div class="who">🧑‍💻 2024<small>Anthropic engineers</small></div><div class="bar"><i data-w="12.5"></i></div><div class="num" data-n="1" data-suffix="×">0</div></div>
+          <div class="ag-lane agent"><div class="who">🤖 Q2 2026<small>Engineers using AI</small></div><div class="bar"><i data-w="100"></i></div><div class="num" data-n="8" data-suffix="×">0</div></div>
+          <p class="small">Code merged per engineer per day at Anthropic, relative to 2024 = 1×. This company-specific result measures code volume, not an equivalent gain in productivity or business value.</p><p class="small" style="font-size:17px;margin-top:10px">Source: <a href="https://www.anthropic.com/institute/recursive-self-improvement" target="_blank" rel="noopener">Anthropic, “When AI builds itself”</a>, Q2 2026 vs 2024.</p>
         </div>
         <div class="card" style="background:var(--deep);border:0;padding:20px;overflow:hidden;height:440px"><div class="ag-code"><div class="ag-scroll">${codeLines}\n${codeLines}</div></div></div>
       </div>
@@ -219,7 +219,7 @@
           const t0 = performance.now()
           const f = now => {
             const k = Math.min(1, (now - t0) / 2400)
-            n.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US') + (k === 1 && n.dataset.plus ? '+' : '')
+            n.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US') + (n.dataset.suffix || (k === 1 && n.dataset.plus ? '+' : ''))
             if (k < 1) requestAnimationFrame(f)
           }
           requestAnimationFrame(f)
@@ -228,7 +228,7 @@
       if (step === 0) el.querySelectorAll('.ag-lane .num').forEach(n => { n.textContent = '0' })
     }
   })
-  A.push({ q: 'q-loc', html: live('q-loc') })
+
   A.push({ q: 'q-merges', html: live('q-merges') })
 
   A.push({
