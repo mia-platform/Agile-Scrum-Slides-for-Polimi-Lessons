@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var p = location.pathname
+      if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
+      document.write('<base href="' + location.origin + p + '">')
+      var t = (location.search.match(/[?&]flow_share=([^&#]+)/) || [])[1]
+      var assetVersion = new URLSearchParams(location.search).get('v') || 'polimi-nav-20261019-2'
+      window.__asset = function (f) { return f + '?v=' + encodeURIComponent(assetVersion) + (t ? '&flow_share=' + t : '') }
+    })()
+  </script>
+  <title>Introduction to Agile and Scrum · Polimi 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>document.write('<link rel="stylesheet" href="' + __asset('deck.css') + '">')</script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛵</text></svg>">
+</head>
+<body class="presenter">
+  <div id="viewport"><div id="stage"></div></div>
+
+  <button id="hud" title="Show the join QR code (Q)">
+    <span id="hud-qr"></span>
+    <span class="hud-text"><b id="hud-players">0</b> joined<br><small>tap Q to enlarge</small></span>
+  </button>
+
+  <nav id="nav">
+    <button id="nav-prev" disabled aria-label="Previous">‹</button>
+    <button id="nav-count" disabled type="button" aria-label="Jump to slide" aria-expanded="false" aria-controls="slide-jump">1 / 1 ▾</button>
+    <button id="nav-next" disabled aria-label="Next">›</button>
+    <button id="nav-fullscreen" aria-label="Enter fullscreen" title="Fullscreen (F)" aria-pressed="false">⛶</button>
+    <button id="nav-menu" aria-label="Presenter settings">⚙</button>
+  </nav>
+  <div id="progress"><i></i></div>
+  <section id="slide-jump" hidden aria-label="Choose a slide">
+    <div class="jump-heading"><b>Jump to slide</b><button type="button" id="jump-close" aria-label="Close slide chooser">×</button></div>
+    <form id="jump-form"><label for="jump-number">Slide number</label><input id="jump-number" type="number" min="1" step="1" required><button type="submit">Go</button></form>
+    <label for="jump-select">Slide title</label><select id="jump-select"></select>
+    <iframe id="jump-preview" title="Selected slide preview"></iframe>
+    <button type="button" id="jump-present">Present selected slide</button>
+  </section>
+
+  <div id="qr-overlay" hidden>
+    <div class="qr-card">
+      <div id="qr-big"></div>
+      <div>
+        <h2>Join the lesson</h2>
+        <p>Scan with your phone camera, pick a nickname and answer live.</p>
+        <p class="qr-url" id="qr-url"></p>
+        <p class="qr-players"><b id="qr-players">0</b> students joined</p>
+        <button class="btn" id="qr-close">Close (Q)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings" hidden>
+    <div class="panel">
+      <h2>Presenter</h2>
+      <div id="signin-box">
+        <p class="hint">Sign in with your admin account to run the live questions.</p>
+        <form id="signin-form">
+          <label>Email <input id="si-email" type="email" autocomplete="username" required></label>
+          <label>Password <input id="si-pass" type="password" autocomplete="current-password" required></label>
+          <div class="row"><button class="btn" type="submit">Sign in</button></div>
+        </form>
+      </div>
+      <div id="signed-box" hidden>
+        <p class="hint">Signed in as <b id="si-who"></b>. Live controls are on.</p>
+        <div class="row">
+          <button class="btn ghost" id="set-reset-answers">Reset all answers</button>
+          <button class="btn ghost danger" id="set-reset-all">Reset answers and players</button>
+          <button class="btn ghost" id="si-out">Sign out</button>
+        </div>
+      </div>
+      <p class="hint" id="key-status" role="status"></p>
+      <div class="row">
+        <a class="btn ghost" id="open-admin" href="admin.html" target="_blank" rel="noopener">Open the admin console</a>
+        <a class="btn ghost" id="open-pdf" href="index.html?print=1" target="_blank" rel="noopener">Export to PDF</a>
+        <button class="btn ghost" id="set-close">Close</button>
+      </div>
+      <h3>Keyboard</h3>
+      <p class="keys"><kbd>→</kbd> <kbd>Space</kbd> next · <kbd>←</kbd> back · <kbd>F</kbd> fullscreen · <kbd>Q</kbd> QR code · <kbd>S</kbd> start · <kbd>X</kbd> stop · <kbd>R</kbd> reveal · <kbd>,</kbd> presenter panel · <kbd>H</kbd> hide QR corner</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>document.write('<script src="' + __asset('common.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides-agentic.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides-scrum-art.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('scrum-framework.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides-updates.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('chapters.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slide-preview.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('deck.js') + '"><\/script>')</script>
+</body>
+</html>

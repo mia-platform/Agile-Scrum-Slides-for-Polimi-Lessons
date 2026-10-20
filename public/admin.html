@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var p = location.pathname
+      if (!/\/$/.test(p)) { var last = p.split('/').pop(); p = last.indexOf('.') >= 0 ? p.slice(0, p.lastIndexOf('/') + 1) : p + '/' }
+      document.write('<base href="' + location.origin + p + '">')
+      var t = (location.search.match(/[?&]flow_share=([^&#]+)/) || [])[1]
+      var assetVersion = new URLSearchParams(location.search).get('v') || 'polimi-nav-20261019-2'
+      window.__asset = function (f) { return f + '?v=' + encodeURIComponent(assetVersion) + (t ? '&flow_share=' + t : '') }
+    })()
+  </script>
+  <title>Agile live · admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+  <style>
+    :root {
+      --deep: #0B2540; --deep-2: #12365A; --lagoon: #F2F7F9; --foam: #D6EEF5; --sea: #1C7C9C;
+      --buoy: #FF5A36; --sand: #F2C14E; --kelp: #2E9E6B; --mist: #5E7387; --line: #C5D7E0; --white: #FFFFFF; --danger: #B3301A;
+      --display: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+      --body: 'IBM Plex Sans', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--body); background: var(--lagoon); color: var(--deep); font-size: 16px; line-height: 1.45; }
+    h1, h2, h3 { font-family: var(--display); letter-spacing: -0.01em; margin: 0; }
+    h1 { font-size: 26px; }
+    h2 { font-size: 24px; margin-bottom: 14px; }
+    h3 { font-size: 18px; margin: 22px 0 10px; }
+    a { color: var(--sea); }
+    header { background: var(--deep); color: var(--white); padding: 14px 28px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    header .sp { flex: 1; }
+    header .who { font-size: 14px; color: var(--foam); }
+    header a, header button { color: var(--white); }
+    main { max-width: 1180px; margin: 0 auto; padding: 26px 22px 80px; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tabs button { border: 2px solid var(--line); background: var(--white); border-radius: 999px; padding: 8px 18px; font: inherit; font-weight: 600; cursor: pointer; color: var(--deep); }
+    .tabs button[aria-selected="true"] { background: var(--deep); border-color: var(--deep); color: var(--white); }
+    .panel { background: var(--white); border: 2px solid var(--line); border-radius: 16px; padding: 22px 24px; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 18px; }
+    label { display: block; font-weight: 600; font-size: 14px; }
+    label small { font-weight: 400; color: var(--mist); }
+    input[type=text], input[type=email], input[type=password], input[type=date], input[type=url], select, textarea {
+      display: block; width: 100%; margin-top: 5px; font: inherit; padding: 10px 12px; border: 2px solid var(--line); border-radius: 10px; background: var(--white); color: var(--deep); }
+    textarea { resize: vertical; }
+    textarea.code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; min-height: 340px; }
+    input:focus, select:focus, textarea:focus, button:focus-visible, a:focus-visible { outline: 3px solid var(--sand); outline-offset: 1px; }
+    .btn { display: inline-block; border: 0; border-radius: 10px; padding: 10px 16px; font: inherit; font-weight: 600; background: var(--deep); color: var(--white); cursor: pointer; text-decoration: none; }
+    .btn.ghost { background: transparent; color: var(--deep); border: 2px solid var(--line); }
+    .btn.go { background: var(--kelp); }
+    .btn.danger { background: transparent; color: var(--danger); border: 2px solid var(--danger); }
+    .btn.small { padding: 6px 12px; font-size: 14px; }
+    .btn:disabled { opacity: .45; cursor: default; }
+    header .btn.ghost { color: var(--white); border-color: #3A5F82; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+    .msg { min-height: 22px; font-size: 14px; margin-top: 10px; }
+    .msg.err { color: var(--danger); }
+    .msg.ok { color: var(--kelp); }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    th { font-size: 13px; color: var(--mist); font-weight: 600; }
+    .table-wrap { overflow-x: auto; }
+    .status { display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--foam); }
+    .status.active { background: var(--kelp); color: var(--white); }
+    .status.archived { background: #E4E9ED; color: var(--mist); }
+    .photo-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    .photo-row img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--foam); background: var(--foam); }
+    .slides { columns: 2 320px; column-gap: 26px; }
+    .slides label { font-weight: 400; display: flex; gap: 8px; align-items: baseline; padding: 3px 0; break-inside: avoid; font-size: 14px; }
+    .slides label span.n { color: var(--mist); min-width: 26px; font-variant-numeric: tabular-nums; }
+    .slides label.off { color: var(--mist); text-decoration: line-through; }
+    .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; margin-top: 10px; }
+    .chap { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; border: 2px solid var(--line); background: var(--lagoon); cursor: pointer; font-weight: 400; }
+    .chap input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+    .chap b { display: block; font-family: var(--display); font-size: 17px; }
+    .chap small { display: block; color: var(--sea); font-weight: 600; font-size: 13px; margin: 2px 0 4px; }
+    .chap em { display: block; font-style: normal; font-size: 13px; color: var(--mist); line-height: 1.35; }
+    .chap.on { border-color: var(--sea); background: var(--white); }
+    .sl-group { break-inside: avoid; margin-bottom: 14px; }
+    .sl-group h4 { margin: 0 0 4px; font-size: 14px; color: var(--sea); }
+    .sl-group.skip { opacity: .4; }
+    .chap { position: relative; }
+    .chap > label { display: flex; gap: 10px; align-items: flex-start; flex: 1; cursor: pointer; font-weight: 400; min-width: 0; }
+    .grip { cursor: grab; color: var(--mist); font-size: 18px; line-height: 1.2; user-select: none; padding: 2px 0; }
+    .mv { display: flex; gap: 4px; flex: none; }
+    .mv .btn.small { padding: 2px 8px; font-size: 14px; line-height: 1.3; }
+    .chap .mv { flex-direction: column; }
+    .dragging { opacity: .45; outline: 2px dashed var(--sea); outline-offset: 2px; }
+    .sl-row { display: flex; gap: 8px; align-items: center; padding: 2px 4px; border-radius: 8px; break-inside: avoid; }
+    .sl-row:hover { background: var(--lagoon); }
+    .sl-row > label { flex: 1; display: flex; gap: 8px; align-items: baseline; font-weight: 400; font-size: 14px; padding: 3px 0; min-width: 0; }
+    .sl-row.off > label { color: var(--mist); text-decoration: line-through; }
+    .sl-row .mv { opacity: .25; }
+    .sl-row:hover .mv, .sl-row:focus-within .mv { opacity: 1; }
+    dialog { border: 0; border-radius: 18px; padding: 26px 28px; width: min(540px, 92vw); color: var(--deep); box-shadow: 0 20px 60px rgba(11, 37, 64, .35); }
+    dialog::backdrop { background: rgba(11, 37, 64, .6); }
+    dialog .opt { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; margin-top: 10px; font-weight: 400; cursor: pointer; }
+    dialog .opt:has(input:checked) { border-color: var(--danger); background: #FFF4F1; }
+    dialog .opt input { margin-top: 4px; }
+    dialog .opt b { display: block; }
+    dialog .opt small { display: block; color: var(--mist); font-size: 14px; }
+    .btn.danger-solid { background: var(--danger); color: var(--white); }
+    .count { font-size: 13px; color: var(--mist); text-align: right; }
+    .auth { max-width: 440px; margin: 60px auto; }
+    .bars .q { margin-bottom: 18px; }
+    .bars .q b { display: block; margin-bottom: 6px; }
+    .bars .o { display: grid; grid-template-columns: 1fr 60px; gap: 10px; align-items: center; font-size: 14px; margin: 3px 0; }
+    .bars .track { height: 22px; border-radius: 6px; background: var(--foam); position: relative; overflow: hidden; }
+    .bars .track i { position: absolute; inset: 0 auto 0 0; background: var(--sea); }
+    .bars .track span { position: relative; padding: 0 8px; font-size: 13px; line-height: 22px; color: var(--deep); }
+    .bars .o.right .track i { background: var(--kelp); }
+    .hint { font-size: 14px; color: var(--mist); }
+    code.k { background: var(--foam); padding: 2px 6px; border-radius: 6px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚓ Agile live · admin</h1>
+    <span class="sp"></span>
+    <span class="who" id="who" hidden></span>
+    <a class="btn ghost small" id="link-deck" href="index.html" target="_blank" rel="noopener">Open presenter</a>
+    <a class="btn ghost small" id="link-join" href="join.html" target="_blank" rel="noopener">Open student page</a>
+    <button class="btn ghost small" id="logout" hidden>Sign out</button>
+  </header>
+
+  <!-- sign in / first setup -->
+  <section class="auth" id="auth" hidden>
+    <div class="panel" id="login-box">
+      <h2>Sign in</h2>
+      <form id="login-form">
+        <label>Email <input type="email" id="l-email" autocomplete="username" required></label>
+        <label style="margin-top:12px">Password <input type="password" id="l-pass" autocomplete="current-password" required></label>
+        <div class="row"><button class="btn" type="submit">Sign in</button> <a href="#" id="show-signup">I have an invite code</a></div>
+        <div class="msg err" id="login-msg" role="alert"></div>
+      </form>
+    </div>
+    <div class="panel" id="signup-box" hidden>
+      <h2 id="signup-title">Create an admin account</h2>
+      <p class="hint" id="signup-hint"></p>
+      <form id="signup-form">
+        <label>Name <input type="text" id="s-name" autocomplete="name"></label>
+        <label style="margin-top:12px">Email <input type="email" id="s-email" autocomplete="username" required></label>
+        <label style="margin-top:12px">Password <small>at least 8 characters</small> <input type="password" id="s-pass" autocomplete="new-password" required minlength="8"></label>
+        <label style="margin-top:12px" id="s-code-label"><span id="s-code-name">Setup code</span> <input type="text" id="s-code" required autocomplete="off"></label>
+        <div class="row"><button class="btn" type="submit">Create account</button> <a href="#" id="show-login">Back to sign in</a></div>
+        <div class="msg err" id="signup-msg" role="alert"></div>
+      </form>
+    </div>
+  </section>
+
+  <main id="app" hidden>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="sessions" aria-selected="true">Sessions</button>
+      <button role="tab" data-tab="edit" aria-selected="false">Personalize</button>
+      <button role="tab" data-tab="results" aria-selected="false">Results</button>
+      <button role="tab" data-tab="account" aria-selected="false">Account &amp; settings</button>
+    </nav>
+
+    <!-- sessions -->
+    <section data-pane="sessions">
+      <div class="panel">
+        <h2>Lesson sessions</h2>
+        <p class="hint">Each session keeps its own students, answers and scores, plus its own titles, speaker, slides and questions. Only the active session receives answers.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Session</th><th>Date</th><th>Place</th><th>Status</th><th>Students</th><th>Answers</th><th>Chapters</th><th></th></tr></thead>
+          <tbody id="sess-rows"></tbody>
+        </table></div>
+        <div class="msg" id="sess-msg" role="status"></div>
+      </div>
+      <div class="panel">
+        <h2>New session</h2>
+        <form id="new-form" class="grid">
+          <label>Name <input type="text" id="n-name" required placeholder="Polimi DSD — Agile and Scrum 2027"></label>
+          <label>Date <input type="date" id="n-date"></label>
+          <label>Place <input type="text" id="n-place" placeholder="Politecnico di Milano"></label>
+          <label>Copy settings from <select id="n-copy"><option value="">Defaults</option></select></label>
+          <div class="row" style="grid-column:1/-1;margin-top:0"><button class="btn" type="submit">Create session</button></div>
+        </form>
+        <div class="msg" id="new-msg" role="status"></div>
+      </div>
+    </section>
+
+    <!-- personalize -->
+    <section data-pane="edit" hidden>
+      <div class="panel">
+        <div class="row" style="margin-top:0;justify-content:space-between">
+          <h2 style="margin:0">Personalize <select id="e-session" style="display:inline-block;width:auto;margin-left:8px"></select></h2>
+          <span class="status" id="e-status"></span>
+        </div>
+        <h3>Session</h3>
+        <div class="grid">
+          <label>Name <input type="text" id="e-name"></label>
+          <label>Date <input type="date" id="e-date"></label>
+          <label>Place <input type="text" id="e-place"></label>
+        </div>
+        <h3>Title slide</h3>
+        <div class="grid">
+          <label>Tag <input type="text" id="e-tag"></label>
+          <label>Title <input type="text" id="e-title"></label>
+          <label>Subtitle <input type="text" id="e-subtitle"></label>
+        </div>
+        <h3>Speaker</h3>
+        <div class="photo-row">
+          <img id="e-photo-img" alt="Speaker photo preview" src="speaker.jpg">
+          <div>
+            <label>Photo <small>square works best; it is cropped and resized</small><input type="file" id="e-photo" accept="image/*"></label>
+            <div class="row" style="margin-top:8px"><button class="btn ghost small" type="button" id="e-photo-default">Use the default photo</button></div>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:14px">
+          <label>Name <input type="text" id="e-sname"></label>
+          <label>Role <input type="text" id="e-srole"></label>
+          <label>LinkedIn <input type="text" id="e-slinkedin"></label>
+          <label>Email <input type="text" id="e-semail"></label>
+        </div>
+        <label style="margin-top:14px">Short bio <small>2 or 3 sentences read well on the slide</small><textarea id="e-sbio" rows="4" maxlength="600"></textarea></label>
+        <div class="count" id="e-sbio-count"></div>
+        <label style="margin-top:6px">Focus areas <small>comma separated</small><input type="text" id="e-sfocus"></label>
+
+        <h3>Chapters to present</h3>
+        <p class="hint">Pick the chapters for this lesson and drag them (or use ↑ ↓) to set their order: the deck, the agenda slide and the slide numbers follow your choice.
+          Quick picks: <button class="btn ghost small" type="button" data-preset="all">Everything</button>
+          <button class="btn ghost small" type="button" data-preset="agile">Agile &amp; Scrum</button>
+          <button class="btn ghost small" type="button" data-preset="agentic">Agentic SDLC talk</button>
+          <button class="btn ghost small" type="button" data-preset="platform">Platform engineering talk</button></p>
+        <div class="chapters" id="e-chapters"></div>
+        <p class="hint" id="e-ch-summary" role="status"></p>
+        <p class="hint"><button class="btn ghost small" type="button" id="e-order-reset" hidden>Reset to the default order</button></p>
+
+        <h3>Slides</h3>
+        <p class="hint">Drag a slide (or use ↑ ↓) to change its place inside its chapter; untick it to skip it. Numbers show the slide number in the lesson; greyed groups belong to chapters you did not select. <a href="#" id="sl-all">Show all slides</a></p>
+        <div class="slides" id="e-slides"></div>
+
+        <h3>Live questions</h3>
+        <label style="font-weight:400"><input type="radio" name="qmode" value="default" checked> Use the default questions (questions.json)</label>
+        <label style="font-weight:400"><input type="radio" name="qmode" value="custom"> Use custom questions for this session</label>
+        <div id="q-custom" hidden>
+          <p class="hint">A JSON list. Each question: <code class="k">id</code>, <code class="k">type</code> (quiz, poll or wordcloud), <code class="k">prompt</code>, 2 to 4 <code class="k">options</code>, and for a quiz the <code class="k">correct</code> option index (0 is the first) and an optional <code class="k">timer</code> in seconds. Keep the ids used by the slides.</p>
+          <textarea class="code" id="e-questions" spellcheck="false"></textarea>
+          <div class="row" style="margin-top:8px"><button class="btn ghost small" type="button" id="q-check">Check the JSON</button> <button class="btn ghost small" type="button" id="q-reset">Start from the defaults</button></div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="e-save">Save changes</button>
+          <button class="btn go" id="e-activate">Make this the active session</button>
+          <a class="btn ghost" id="e-preview" href="index.html" target="_blank" rel="noopener">Open presenter</a>
+          <a class="btn ghost" id="e-pdf" href="index.html?print=1" target="_blank" rel="noopener" title="Uses the saved settings of this session">Export to PDF</a>
+        </div>
+        <div class="msg" id="e-msg" role="status"></div>
+      </div>
+    </section>
+
+    <!-- results -->
+    <section data-pane="results" hidden>
+      <div class="panel">
+        <div class="row" style="margin-top:0;justify-content:space-between">
+          <h2 style="margin:0">Results <select id="r-session" style="display:inline-block;width:auto;margin-left:8px"></select></h2>
+          <span class="row" style="margin-top:0"><button class="btn ghost small" id="r-export">Download all data (JSON)</button><button class="btn danger small" id="r-reset">Reset results</button></span>
+        </div>
+        <p class="hint" id="r-summary"></p>
+        <div class="grid" style="grid-template-columns:minmax(260px,1fr) 2fr;align-items:start">
+          <div><h3>Leaderboard</h3><div class="table-wrap"><table><thead><tr><th>#</th><th>Nickname</th><th>Points</th></tr></thead><tbody id="r-board"></tbody></table></div></div>
+          <div><h3>Answers per question</h3><div class="bars" id="r-questions"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- account -->
+    <section data-pane="account" hidden>
+      <div class="panel">
+        <h2>Change password</h2>
+        <form id="pw-form" class="grid">
+          <label>Current password <input type="password" id="pw-cur" autocomplete="current-password" required></label>
+          <label>New password <small>at least 8 characters</small><input type="password" id="pw-new" autocomplete="new-password" minlength="8" required></label>
+          <div class="row" style="grid-column:1/-1;margin-top:0"><button class="btn" type="submit">Change password</button></div>
+        </form>
+        <div class="msg" id="pw-msg" role="status"></div>
+      </div>
+      <div class="panel">
+        <h2>Invite another admin</h2>
+        <p class="hint">Creates a one-time code valid for 7 days. Send it with the link to this page: they choose “I have an invite code” and create their account.</p>
+        <div class="row" style="margin-top:0"><input type="email" id="inv-email" placeholder="Their email (optional)" style="max-width:320px;margin:0"><button class="btn" id="inv-go">Create invite code</button></div>
+        <div class="msg" id="inv-msg" role="status"></div>
+      </div>
+      <div class="panel">
+        <h2>Student link in the QR code</h2>
+        <p class="hint">The public share link of this app followed by <code class="k">join.html</code>, so phones open it without a Flow login.</p>
+        <label>Link <input type="url" id="cfg-url"></label>
+        <div class="row"><button class="btn" id="cfg-save">Save link</button></div>
+        <div class="msg" id="cfg-msg" role="status"></div>
+      </div>
+    </section>
+  </main>
+  <dialog id="reset-dlg" aria-labelledby="reset-title">
+    <form method="dialog">
+      <h2 id="reset-title">Reset the results?</h2>
+      <p id="reset-what"></p>
+      <label class="opt"><input type="radio" name="rkeep" value="keep" checked><span><b>Clear answers and scores</b><small>Students stay joined and can keep playing.</small></span></label>
+      <label class="opt"><input type="radio" name="rkeep" value="all"><span><b>Clear everything</b><small>Answers, scores and students: everyone has to scan the QR code and join again.</small></span></label>
+      <p class="hint">This can’t be undone. Use “Download all data” first if you want a copy.</p>
+      <div class="row">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn danger-solid" type="button" id="reset-go">Reset results</button>
+      </div>
+      <div class="msg err" id="reset-msg" role="alert"></div>
+    </form>
+  </dialog>
+
+  <script>document.write('<script src="' + __asset('common.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides-agentic.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides-scrum-art.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('scrum-framework.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slides-updates.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('chapters.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('slide-preview.js') + '"><\/script>')</script>
+  <script>document.write('<script src="' + __asset('admin.js') + '"><\/script>')</script>
+</body>
+</html>
