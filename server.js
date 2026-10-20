@@ -16,14 +16,12 @@ const { hashPassword, verifyPassword } = require('./auth/password')
 
 const ROOT = __dirname
 const QUESTIONS_FILE = path.join(ROOT, 'questions.json')
-const CONFIG_FILE = path.join(ROOT, 'config.json')
 const SCHEMA_FILE = path.join(ROOT, 'db', 'init', '010_deck.sql')
 
 function readJson (file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')) } catch (_) { return fallback }
 }
-const baseConfig = readJson(CONFIG_FILE, {})
-const SETUP_CODE = process.env.SETUP_CODE || baseConfig.setupCode || ''
+const SETUP_CODE = process.env.SETUP_CODE || ''
 
 const pool = new Pool(process.env.DATABASE_URL ? { connectionString: process.env.DATABASE_URL, max: 8 } : { max: 8 })
 
@@ -121,7 +119,7 @@ function ready () {
     readyPromise = (async () => {
       await pool.query(fs.readFileSync(SCHEMA_FILE, 'utf8'))
       await pool.query(fs.readFileSync(path.join(ROOT, 'db', 'init', '020_media.sql'), 'utf8'))
-      if ((await getSetting('publicUrl', null)) === null && baseConfig.publicUrl) await setSetting('publicUrl', baseConfig.publicUrl)
+      if ((await getSetting('publicUrl', null)) === null && process.env.PUBLIC_URL) await setSetting('publicUrl', process.env.PUBLIC_URL)
       if (!(await getSetting('migrated_roi_chapter', false))) {
         const { rows } = await pool.query("SELECT id, config FROM deck_sessions WHERE jsonb_typeof(config->'chapters') = 'array'")
         for (const r of rows) {
@@ -198,12 +196,12 @@ function publicQuestion (qid) {
 const app = express()
 app.use((req, res, next) => { res.set('Cache-Control', 'no-store'); next() })
 
-// The first admin account needs the setup code from config.json, so nobody else can claim the console.
+// The first admin account needs the setup code (env SETUP_CODE), so nobody else can claim the console.
 app.post('/auth/signup', express.json(), async (req, res, next) => {
   try {
     const users = await authStore.ready().then(() => authStore.countUsers())
     if (users === 0 && (!SETUP_CODE || (req.body && req.body.setupCode) !== SETUP_CODE)) {
-      return res.status(403).json({ error: 'Enter the setup code from config.json to create the first admin' })
+      return res.status(403).json({ error: 'Enter the setup code (SETUP_CODE) to create the first admin' })
     }
   } catch (e) { return next(e) }
   next()

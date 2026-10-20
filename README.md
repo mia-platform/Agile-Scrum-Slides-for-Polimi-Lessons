@@ -31,7 +31,6 @@ Single Node.js service (`server.js`, Express + `pg`):
 ```
 services/app/
 ├── server.js        # API + static pages + auth mounting
-├── config.json      # setupCode + publicUrl defaults
 ├── questions.json   # all poll/quiz/word-cloud questions
 ├── auth/            # vfs_scaffold_auth: signup/login/sessions/roles (see auth/README.md)
 ├── db/init/         # idempotent PostgreSQL schema (see db/README.md)
@@ -64,9 +63,7 @@ npm install
 npm start        # node server.js
 ```
 
-Requires a PostgreSQL database; connection is injected via `DATABASE_URL` or `PG*` environment variables (never hard-coded). On first run, sign-up with the setup code (`config.json` → `setupCode`, overridable with `SETUP_CODE`); the first account becomes `admin`.
 
-Deployed as a Flow sandbox preview; `config.json` also carries the `publicUrl` used to build the join QR code.
 
 ## License
 

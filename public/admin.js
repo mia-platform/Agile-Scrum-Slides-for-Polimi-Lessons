@@ -40,7 +40,7 @@
     $('signup-box').dataset.mode = mode
     $('signup-title').textContent = mode === 'setup' ? 'Create the first admin account' : 'Create your admin account'
     $('signup-hint').textContent = mode === 'setup'
-      ? 'No admin exists yet. Enter the setup code from config.json (setupCode) to create the first one.'
+      ? 'No admin exists yet. Enter the setup code (SETUP_CODE) to create the first one.'
       : 'Use the invite code an admin sent you.'
     $('s-code-name').textContent = mode === 'setup' ? 'Setup code' : 'Invite code'
     $('show-login').hidden = mode === 'setup'
